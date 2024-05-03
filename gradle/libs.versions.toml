@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.0-alpha06"
+agp = "8.5.0-alpha07"
 kotlin = "1.9.0"
 coreKtx = "1.13.0"
 junit = "4.13.2"
@@ -11,6 +11,7 @@ composeBom = "2023.08.00"
 appcompat = "1.6.1"
 material = "1.11.0"
 playServicesAuthBase = "18.0.12"
+google-services = "4.4.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,4 +36,5 @@ play-services-auth-base = { group = "com.google.android.gms", name = "play-servi
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
@@ -32,6 +33,9 @@ fun PasswordInput(
     placeHolder: String,
     isRequired: Boolean = false,
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    supportedErrorText: String = "",
+    isEnable: Boolean = true,
     onTextChange: (text: String) -> Unit
 ) {
     val showPassword = remember { mutableStateOf(false) }
@@ -43,7 +47,6 @@ fun PasswordInput(
                 fontSize = 16.sp,
                 color = Color.Black
             )
-
             if (isRequired) {
                 Text(
                     text = "*",
@@ -53,13 +56,23 @@ fun PasswordInput(
                 )
             }
         }
-
         OutlinedTextField(
             value = text,
             onValueChange = onTextChange,
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             placeholder = { Text(placeHolder) },
+            enabled = isEnable,
+            isError = isError,
+            supportingText = {
+                if (isError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = supportedErrorText,
+                        color = Color.Red
+                    )
+                }
+            },
             visualTransformation = if (showPassword.value) {
                 VisualTransformation.None
             } else {
@@ -67,11 +80,19 @@ fun PasswordInput(
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                val icon = if (showPassword.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                val description = if (showPassword.value) "Hide password" else "Show password"
+                if (isError) {
+                    Icon(
+                        imageVector = Icons.Filled.Error,
+                        contentDescription = "error",
+                        tint = Color.Red
+                    )
+                } else {
+                    val icon = if (showPassword.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    val description = if (showPassword.value) "Hide password" else "Show password"
 
-                IconButton(onClick = { showPassword.value = !showPassword.value }) {
-                    Icon(imageVector = icon, contentDescription = description)
+                    IconButton(onClick = { showPassword.value = !showPassword.value }) {
+                        Icon(imageVector = icon, contentDescription = description)
+                    }
                 }
             }
         )

@@ -2,11 +2,10 @@ package com.github.crisacm.sessionmanager.ui.screens.login.composables
 
 import android.accounts.AccountManager
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,10 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -29,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,15 +34,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
 import com.github.crisacm.sessionmanager.ui.base.SIDE_EFFECTS_KEY
 import com.github.crisacm.sessionmanager.ui.components.DefaultInput
 import com.github.crisacm.sessionmanager.ui.components.PasswordInput
 import com.github.crisacm.sessionmanager.ui.screens.login.LoginContracts
 import com.google.android.gms.auth.GoogleAuthUtil
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 @Composable
 fun Login(
@@ -57,32 +50,49 @@ fun Login(
     onEventSent: (event: LoginContracts.Event) -> Unit,
     onNavigationRequested: (navigationEffect: LoginContracts.Effect.Navigation) -> Unit
 ) {
+    val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
-    val snackBarMessage = "Testing snack!"
-    val scope = rememberCoroutineScope()
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(SIDE_EFFECTS_KEY) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                LoginContracts.Effect.Failed -> {}
-                LoginContracts.Effect.Navigation.ToMain -> {}
+                LoginContracts.Effect.FailSingIn -> {
+                    snackBarHostState.showSnackbar("Failed to sing in")
+                }
+
+                LoginContracts.Effect.Navigation.ToMain -> {
+                    onNavigationRequested(LoginContracts.Effect.Navigation.ToRegister)
+                }
+
                 LoginContracts.Effect.UserLogged -> {}
                 LoginContracts.Effect.UserRegistered -> {}
-                LoginContracts.Effect.Navigation.ToRegister -> {}
-            }
-        }
-    }
+                LoginContracts.Effect.Navigation.ToRegister -> {
+                    onNavigationRequested(LoginContracts.Effect.Navigation.ToRegister)
+                }
 
-    val context = LocalContext.current
-    var username by rememberSaveable { mutableStateOf("user@gmail.com") }
-    var password by rememberSaveable { mutableStateOf("Enter your password") }
+                LoginContracts.Effect.PassEmpty -> {
+                    snackBarHostState.showSnackbar("Please enter a password")
+                }
+
+                LoginContracts.Effect.UserEmpty -> {
+                    snackBarHostState.showSnackbar("Please enter a username")
+                }
+
+                LoginContracts.Effect.WrongPass -> {
+                    snackBarHostState.showSnackbar("Worng password")
+                }
+            }
+        }?.collect()
+    }
 
     val result = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             val accountName = it.data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-            Toast.makeText(context, "User: $accountName", Toast.LENGTH_SHORT).show()
+            onEventSent(LoginContracts.Event.SingInWithGoogle(accountName ?: ""))
         }
     }
 
@@ -90,6 +100,8 @@ fun Login(
         snackbarHost = { SnackbarHost(hostState = (snackBarHostState)) },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
+        Log.i("Event", "State value: $state")
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -118,26 +130,32 @@ fun Login(
                 modifier = Modifier
                     .padding(24.dp, 48.dp, 24.dp, 0.dp)
                     .fillMaxWidth(),
+                isError = state.isErrorUserEmpty,
+                supportedErrorText = "Enter a username",
+                isEnable = !state.isLoading
             ) {
                 username = it
             }
 
             PasswordInput(
-                text = password, label = "Password", placeHolder = "password", modifier = Modifier
+                text = password,
+                label = "Password",
+                placeHolder = "password",
+                modifier = Modifier
                     .padding(24.dp, 24.dp, 24.dp, 0.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                isError = state.isErrorPassEmpty,
+                supportedErrorText = "Enter an password",
+                isEnable = !state.isLoading
             ) {
                 password = it
             }
 
-            Button(modifier = Modifier
-                .padding(24.dp, 36.dp, 24.dp, 0.dp)
-                .fillMaxWidth(), shape = RoundedCornerShape(6.dp), onClick = {
-                scope.launch {
-                    snackBarHostState.showSnackbar(snackBarMessage)
-                }
-            }) {
-                Text(text = "Sign In")
+            LoginButton(
+                modifier = Modifier.padding(24.dp, 36.dp, 24.dp, 0.dp),
+                loading = state.isLoading
+            ) {
+                onEventSent(LoginContracts.Event.SingIn(username, password))
             }
 
             Row(
@@ -182,8 +200,10 @@ fun Login(
                 Text(text = "Create now", fontSize = 16.sp, color = Color.Blue, modifier = Modifier
                     .padding(12.dp, 0.dp, 0.dp, 0.dp)
                     .clickable {
-                        onNavigationRequested(LoginContracts.Effect.Navigation.ToMain)
-                    })
+                        Log.i("Event", "Register click")
+                        onEventSent(LoginContracts.Event.Register)
+                    }
+                )
             }
         }
     }
@@ -195,7 +215,23 @@ fun LoginPreview() {
     Login(
         state = LoginContracts.State(
             isLoading = false,
-            isError = false
+            isErrorUserEmpty = false,
+            isErrorPassEmpty = false
+        ),
+        effectFlow = null,
+        onEventSent = {},
+        onNavigationRequested = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginLoadingPreview() {
+    Login(
+        state = LoginContracts.State(
+            isLoading = true,
+            isErrorUserEmpty = false,
+            isErrorPassEmpty = false
         ),
         effectFlow = null,
         onEventSent = {},

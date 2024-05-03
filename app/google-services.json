@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "1063751660389",
+    "project_id": "repositorio-personal",
+    "storage_bucket": "repositorio-personal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063751660389:android:07cb8fad47004e3189a78c",
+        "android_client_info": {
+          "package_name": "com.github.crisacm.cleannotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063751660389-t60b29ij89lqmvn2nuv0c0rk4jele00k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-AyRkmuHIPk6a8F40ilX9uay94pXQ6So"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063751660389-ru6o3703mucc5rednu58ofln4oe9g6qn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063751660389:android:a1622e748140ad7689a78c",
+        "android_client_info": {
+          "package_name": "com.github.crisacm.sessionmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063751660389-v4a9nd4t1cvjcdsmpgq281ur3udvfgb5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.crisacm.sessionmanager",
+            "certificate_hash": "1c66bb73f7ebcb80e98c39094803b8b04d76c109"
+          }
+        },
+        {
+          "client_id": "1063751660389-t60b29ij89lqmvn2nuv0c0rk4jele00k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-AyRkmuHIPk6a8F40ilX9uay94pXQ6So"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063751660389-ru6o3703mucc5rednu58ofln4oe9g6qn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -7,23 +7,28 @@ import com.github.crisacm.sessionmanager.ui.base.ViewState
 class LoginContracts {
 
     sealed class Event : ViewEvent {
-        object Failed : Event()
+        data object Register : Event()
         data class SingIn(val user: String, val password: String) : Event()
+        data class SingInWithGoogle(val account: String) : Event()
     }
 
     data class State(
         val isLoading: Boolean,
-        val isError: Boolean
+        val isErrorUserEmpty: Boolean,
+        val isErrorPassEmpty: Boolean
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {
-        object Failed : Effect()
-        object UserLogged : Effect()
-        object UserRegistered : Effect()
+        data object FailSingIn : Effect()
+        data object UserEmpty : Effect()
+        data object PassEmpty : Effect()
+        data object WrongPass : Effect()
+        data object UserLogged : Effect()
+        data object UserRegistered : Effect()
 
         sealed class Navigation : Effect() {
-            object ToMain : Navigation()
-            object ToRegister : Navigation()
+            data object ToMain : Navigation()
+            data object ToRegister : Navigation()
         }
     }
 }

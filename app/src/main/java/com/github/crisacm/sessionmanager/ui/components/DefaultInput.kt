@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -24,6 +27,9 @@ fun DefaultInput(
     placeHolder: String,
     isRequired: Boolean = false,
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    supportedErrorText: String = "",
+    isEnable: Boolean = true,
     onTextInput: (String) -> Unit
 ) {
     Column(modifier) {
@@ -33,7 +39,6 @@ fun DefaultInput(
                 fontSize = 16.sp,
                 color = Color.Black
             )
-
             if (isRequired) {
                 Text(
                     text = "*",
@@ -43,12 +48,31 @@ fun DefaultInput(
                 )
             }
         }
-
         OutlinedTextField(
             value = text,
             modifier = Modifier.fillMaxWidth(),
             onValueChange = { onTextInput(it) },
             placeholder = { Text(placeHolder) },
+            enabled = isEnable,
+            isError = isError,
+            supportingText = {
+                if (isError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = supportedErrorText,
+                        color = Color.Red
+                    )
+                }
+            },
+            trailingIcon = {
+                if (isError) {
+                    Icon(
+                        imageVector = Icons.Filled.Error,
+                        contentDescription = "error",
+                        tint = Color.Red
+                    )
+                }
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
