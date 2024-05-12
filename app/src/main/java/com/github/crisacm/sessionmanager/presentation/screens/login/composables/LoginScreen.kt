@@ -1,9 +1,8 @@
-package com.github.crisacm.sessionmanager.ui.screens.login.composables
+package com.github.crisacm.sessionmanager.presentation.screens.login.composables
 
 import android.accounts.AccountManager
 import android.app.Activity
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -34,17 +33,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.crisacm.sessionmanager.ui.base.SIDE_EFFECTS_KEY
-import com.github.crisacm.sessionmanager.ui.components.DefaultInput
-import com.github.crisacm.sessionmanager.ui.components.PasswordInput
-import com.github.crisacm.sessionmanager.ui.screens.login.LoginContracts
+import com.github.crisacm.sessionmanager.presentation.base.SIDE_EFFECTS_KEY
+import com.github.crisacm.sessionmanager.presentation.component.DefaultInput
+import com.github.crisacm.sessionmanager.presentation.component.PasswordInput
+import com.github.crisacm.sessionmanager.presentation.screens.login.LoginContracts
 import com.google.android.gms.auth.GoogleAuthUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 @Composable
-fun Login(
+fun LoginScreen(
     state: LoginContracts.State,
     effectFlow: Flow<LoginContracts.Effect>?,
     onEventSent: (event: LoginContracts.Event) -> Unit,
@@ -52,36 +51,23 @@ fun Login(
 ) {
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
+
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(SIDE_EFFECTS_KEY) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                LoginContracts.Effect.FailSingIn -> {
-                    snackBarHostState.showSnackbar("Failed to sing in")
+                is LoginContracts.Effect.Navigation.ToMain -> {
+                    onNavigationRequested(LoginContracts.Effect.Navigation.ToMain)
                 }
 
-                LoginContracts.Effect.Navigation.ToMain -> {
+                is LoginContracts.Effect.Navigation.ToRegister -> {
                     onNavigationRequested(LoginContracts.Effect.Navigation.ToRegister)
                 }
 
-                LoginContracts.Effect.UserLogged -> {}
-                LoginContracts.Effect.UserRegistered -> {}
-                LoginContracts.Effect.Navigation.ToRegister -> {
-                    onNavigationRequested(LoginContracts.Effect.Navigation.ToRegister)
-                }
-
-                LoginContracts.Effect.PassEmpty -> {
-                    snackBarHostState.showSnackbar("Please enter a password")
-                }
-
-                LoginContracts.Effect.UserEmpty -> {
-                    snackBarHostState.showSnackbar("Please enter a username")
-                }
-
-                LoginContracts.Effect.WrongPass -> {
-                    snackBarHostState.showSnackbar("Worng password")
+                is LoginContracts.Effect.ShowSnack -> {
+                    snackBarHostState.showSnackbar(effect.msg)
                 }
             }
         }?.collect()
@@ -175,7 +161,7 @@ fun Login(
                 )
             }
 
-            GoogleButton {
+            GoogleButton(!state.isLoading) {
                 val intent = AccountManager
                     .newChooseAccountIntent(
                         null,
@@ -211,8 +197,8 @@ fun Login(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview() {
-    Login(
+fun LoginScreenPreview() {
+    LoginScreen(
         state = LoginContracts.State(
             isLoading = false,
             isErrorUserEmpty = false,
@@ -226,8 +212,8 @@ fun LoginPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginLoadingPreview() {
-    Login(
+fun LoginScreenLoadingPreview() {
+    LoginScreen(
         state = LoginContracts.State(
             isLoading = true,
             isErrorUserEmpty = false,

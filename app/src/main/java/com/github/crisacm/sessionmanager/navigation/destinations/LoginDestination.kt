@@ -3,15 +3,15 @@ package com.github.crisacm.sessionmanager.navigation.destinations
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.github.crisacm.sessionmanager.navigation.NavItem
-import com.github.crisacm.sessionmanager.ui.screens.login.LoginContracts
-import com.github.crisacm.sessionmanager.ui.screens.login.LoginViewModel
-import com.github.crisacm.sessionmanager.ui.screens.login.composables.Login
+import com.github.crisacm.sessionmanager.presentation.screens.login.LoginContracts
+import com.github.crisacm.sessionmanager.presentation.screens.login.LoginViewModel
+import com.github.crisacm.sessionmanager.presentation.screens.login.composables.LoginScreen
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun LoginScreenDestination(navController: NavController) {
     val vieWModel = getViewModel<LoginViewModel>()
-    Login(
+    LoginScreen(
         state = vieWModel.viewState.value,
         effectFlow = vieWModel.effect,
         onEventSent = { event -> vieWModel.setEvent(event) },

@@ -4,12 +4,13 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 sealed class NavItem(
-    internal val baseRoute: String,
+    private val baseRoute: String,
     private val navArgs: List<NavItemArgs> = emptyList()
 ) {
-    object Login : NavItem("login")
-    object Register : NavItem("register")
-    object Home : NavItem("home")
+    data object Splash : NavItem("splash")
+    data object Login : NavItem("login")
+    data object Register : NavItem("register")
+    data object Home : NavItem("home")
 
     /*
     object NoteDetails : NavItem("noteDetails", listOf(NavItemArgs.NoteId)) {

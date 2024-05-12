@@ -98,4 +98,8 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Logged
+    implementation("com.jakewharton.timber:timber:5.0.1")
 }

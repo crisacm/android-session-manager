@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SessionManager</string>
+    <string name="text_splash_screen">Splash Screen</string>
 </resources>

@@ -1,8 +1,8 @@
-package com.github.crisacm.sessionmanager.ui.screens.login
+package com.github.crisacm.sessionmanager.presentation.screens.login
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.github.crisacm.sessionmanager.ui.base.BaseViewModel
+import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -27,20 +27,20 @@ class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State,
         viewModelScope.launch {
             if (user.isEmpty()) {
                 setState { copy(isErrorUserEmpty = true) }
-                setEffect { LoginContracts.Effect.UserEmpty }
+                setEffect { LoginContracts.Effect.ShowSnack("Please enter a username") }
                 return@launch
             }
 
             if (pass.isEmpty()) {
                 setState { copy(isErrorUserEmpty = false, isErrorPassEmpty = true) }
-                setEffect { LoginContracts.Effect.PassEmpty }
+                setEffect { LoginContracts.Effect.ShowSnack("Please enter a password") }
                 return@launch
             }
 
             setState { copy(isLoading = true, isErrorUserEmpty = false, isErrorPassEmpty = false) }
             delay(1000)
             setState { copy(isLoading = false) }
-            setEffect { LoginContracts.Effect.FailSingIn }
+            setEffect { LoginContracts.Effect.ShowSnack("Fail sign in") }
             Log.i("Event", "singInEvent end")
         }
     }
@@ -50,7 +50,7 @@ class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State,
             setState { copy(isLoading = true, isErrorUserEmpty = false, isErrorPassEmpty = false) }
             delay(1000)
             setState { copy(isLoading = false) }
-            setEffect { LoginContracts.Effect.FailSingIn }
+            setEffect { LoginContracts.Effect.ShowSnack("Fail sign in") }
         }
     }
 }

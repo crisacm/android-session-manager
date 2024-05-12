@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.github.crisacm.sessionmanager.ui.components
+package com.github.crisacm.sessionmanager.presentation.component
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons

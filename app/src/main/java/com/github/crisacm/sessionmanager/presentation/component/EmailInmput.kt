@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.ui.components
+package com.github.crisacm.sessionmanager.presentation.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

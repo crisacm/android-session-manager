@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.ui.screens.login.composables
+package com.github.crisacm.sessionmanager.presentation.screens.login.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

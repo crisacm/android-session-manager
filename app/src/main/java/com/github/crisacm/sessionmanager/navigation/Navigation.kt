@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.crisacm.sessionmanager.navigation.destinations.HomeScreenDestination
 import com.github.crisacm.sessionmanager.navigation.destinations.LoginScreenDestination
 import com.github.crisacm.sessionmanager.navigation.destinations.RegisterScreenDestination
+import com.github.crisacm.sessionmanager.navigation.destinations.SplashScreenDestination
 
 @Composable
 fun Navigation() {
@@ -16,7 +17,7 @@ fun Navigation() {
 
     NavHost(
         navController = navController,
-        startDestination = NavItem.Login.route
+        startDestination = NavItem.Splash.route
     ) {
         composable(NavItem.Home) {
             HomeScreenDestination(navController = navController)
@@ -28,6 +29,10 @@ fun Navigation() {
 
         composable(NavItem.Register) {
             RegisterScreenDestination(navController = navController)
+        }
+
+        composable(NavItem.Splash) {
+            SplashScreenDestination(navController = navController)
         }
 
         /*

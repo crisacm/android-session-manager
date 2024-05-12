@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.ui.components
+package com.github.crisacm.sessionmanager.presentation.component
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -8,26 +8,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PasswordInput(
+fun DefaultInput(
     text: String,
     label: String,
     placeHolder: String,
@@ -36,10 +30,8 @@ fun PasswordInput(
     isError: Boolean = false,
     supportedErrorText: String = "",
     isEnable: Boolean = true,
-    onTextChange: (text: String) -> Unit
+    onTextInput: (String) -> Unit
 ) {
-    val showPassword = remember { mutableStateOf(false) }
-
     Column(modifier) {
         Row(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)) {
             Text(
@@ -58,9 +50,8 @@ fun PasswordInput(
         }
         OutlinedTextField(
             value = text,
-            onValueChange = onTextChange,
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+            onValueChange = { onTextInput(it) },
             placeholder = { Text(placeHolder) },
             enabled = isEnable,
             isError = isError,
@@ -73,12 +64,6 @@ fun PasswordInput(
                     )
                 }
             },
-            visualTransformation = if (showPassword.value) {
-                VisualTransformation.None
-            } else {
-                PasswordVisualTransformation()
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
                 if (isError) {
                     Icon(
@@ -86,23 +71,22 @@ fun PasswordInput(
                         contentDescription = "error",
                         tint = Color.Red
                     )
-                } else {
-                    val icon = if (showPassword.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = if (showPassword.value) "Hide password" else "Show password"
-
-                    IconButton(onClick = { showPassword.value = !showPassword.value }) {
-                        Icon(imageVector = icon, contentDescription = description)
-                    }
                 }
-            }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White
+            )
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PasswordInputPreview() {
-    PasswordInput(text = "", placeHolder = "password", label = "Password") {
-        Log.i("PasswordInput", it)
+fun DefaultInputPreview() {
+    DefaultInput(text = "", placeHolder = "Email Address", label = "Username") {
+        Log.i("Input", it)
     }
 }

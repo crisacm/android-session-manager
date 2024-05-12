@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.ui.main
+package com.github.crisacm.sessionmanager.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

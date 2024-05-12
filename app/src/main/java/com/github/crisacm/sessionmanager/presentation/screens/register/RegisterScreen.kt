@@ -1,10 +1,6 @@
-package com.github.crisacm.sessionmanager.ui.screens.register
+package com.github.crisacm.sessionmanager.presentation.screens.register
 
-import android.accounts.AccountManager
-import android.app.Activity
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,8 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.crisacm.sessionmanager.ui.components.DefaultInput
-import com.github.crisacm.sessionmanager.ui.components.PasswordInput
+import com.github.crisacm.sessionmanager.presentation.component.DefaultInput
+import com.github.crisacm.sessionmanager.presentation.component.PasswordInput
 
 
 @Composable

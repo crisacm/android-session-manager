@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.ui.base
+package com.github.crisacm.sessionmanager.presentation.base
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State

@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.ui.screens.login.composables
+package com.github.crisacm.sessionmanager.presentation.screens.login.composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -18,17 +18,20 @@ import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun GoogleButton(
+    isEnable: Boolean = true,
     onClick: () -> Unit
 ) {
-    Button(modifier = Modifier
-        .padding(24.dp, 0.dp, 24.dp, 0.dp)
-        .fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-        containerColor = Color.White
-    ), border = BorderStroke(2.dp, Color.LightGray), shape = RoundedCornerShape(4.dp), onClick = {
-        onClick()
-    }) {
+    Button(
+        modifier = Modifier
+            .padding(24.dp, 0.dp, 24.dp, 0.dp)
+            .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        border = BorderStroke(2.dp, Color.LightGray),
+        shape = RoundedCornerShape(4.dp),
+        enabled = isEnable,
+        onClick = { onClick() }
+    ) {
         val imgUrl = "https://imagepng.org/wp-content/uploads/2019/08/google-icon-1.png"
-
         Image(painter = rememberAsyncImagePainter(imgUrl), contentDescription = null, modifier = Modifier.size(24.dp))
         Text(text = "Google", color = Color.Gray, modifier = Modifier.padding(12.dp, 0.dp, 0.dp, 0.dp))
     }

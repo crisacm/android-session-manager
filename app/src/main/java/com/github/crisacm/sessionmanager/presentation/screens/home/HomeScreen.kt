@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.ui.screens.home
+package com.github.crisacm.sessionmanager.presentation.screens.home
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -19,8 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.crisacm.sessionmanager.ui.components.AppBar
-import com.github.crisacm.sessionmanager.ui.components.AppBarAction
+import com.github.crisacm.sessionmanager.presentation.component.AppBar
+import com.github.crisacm.sessionmanager.presentation.component.AppBarAction
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

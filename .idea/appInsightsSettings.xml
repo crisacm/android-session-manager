@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.github.crisacm.sessionmanager" />
+                  <option name="mobileSdkAppId" value="1:1063751660389:android:a1622e748140ad7689a78c" />
+                  <option name="projectId" value="repositorio-personal" />
+                  <option name="projectNumber" value="1063751660389" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
