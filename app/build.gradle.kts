@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended:1.6.6")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     // Lifecycle
     implementation(libs.androidx.lifecycle.runtime.ktx)
