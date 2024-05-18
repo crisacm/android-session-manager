@@ -1,6 +1,5 @@
 package com.github.crisacm.sessionmanager.presentation.component
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,37 +26,40 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PasswordInput(
-    text: String,
-    label: String,
+fun PasswordTextField(
+    modifier: Modifier,
+    textValue: String,
     placeHolder: String,
-    isRequired: Boolean = false,
-    modifier: Modifier = Modifier,
+    label: String? = null,
     isError: Boolean = false,
-    supportedErrorText: String = "",
+    supportedText: String = "",
     isEnable: Boolean = true,
+    isRequired: Boolean = false,
     onTextChange: (text: String) -> Unit
 ) {
     val showPassword = remember { mutableStateOf(false) }
 
     Column(modifier) {
-        Row(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)) {
-            Text(
-                text = label,
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-            if (isRequired) {
+        if (label != null) {
+            Row(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)) {
                 Text(
-                    text = "*",
+                    text = label,
                     fontSize = 16.sp,
-                    color = Color.Red,
-                    modifier = Modifier.padding(6.dp, 0.dp, 0.dp, 0.dp)
+                    color = Color.Black
                 )
+
+                if (isRequired) {
+                    Text(
+                        text = "*",
+                        fontSize = 16.sp,
+                        color = Color.Red,
+                        modifier = Modifier.padding(6.dp, 0.dp, 0.dp, 0.dp)
+                    )
+                }
             }
         }
         OutlinedTextField(
-            value = text,
+            value = textValue,
             onValueChange = onTextChange,
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -68,7 +70,7 @@ fun PasswordInput(
                 if (isError) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = supportedErrorText,
+                        text = supportedText,
                         color = Color.Red
                     )
                 }
@@ -101,8 +103,32 @@ fun PasswordInput(
 
 @Preview(showBackground = true)
 @Composable
-fun PasswordInputPreview() {
-    PasswordInput(text = "", placeHolder = "password", label = "Password") {
-        Log.i("PasswordInput", it)
-    }
+fun PasswordTextFieldPreview() {
+    PasswordTextField(
+        modifier = Modifier,
+        textValue = "",
+        placeHolder = "password",
+        label = "Password",
+        isError = false,
+        supportedText = "",
+        isEnable = true,
+        isRequired = true,
+        onTextChange = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PasswordTextFieldErrorPreview() {
+    PasswordTextField(
+        modifier = Modifier,
+        textValue = "",
+        placeHolder = "password",
+        label = "Password",
+        isError = true,
+        supportedText = "Wrong password",
+        isEnable = true,
+        isRequired = false,
+        onTextChange = {}
+    )
 }

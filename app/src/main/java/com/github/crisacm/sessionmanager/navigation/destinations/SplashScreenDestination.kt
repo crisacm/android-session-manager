@@ -4,26 +4,24 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.github.crisacm.sessionmanager.navigation.Home
 import com.github.crisacm.sessionmanager.navigation.Login
-import com.github.crisacm.sessionmanager.presentation.screens.register.RegisterContracts
-import com.github.crisacm.sessionmanager.presentation.screens.register.RegisterViewModel
-import com.github.crisacm.sessionmanager.presentation.screens.register.composables.Register
+import com.github.crisacm.sessionmanager.navigation.Splash
+import com.github.crisacm.sessionmanager.presentation.screens.splash.SplashContracts
+import com.github.crisacm.sessionmanager.presentation.screens.splash.SplashViewModel
+import com.github.crisacm.sessionmanager.presentation.screens.splash.composables.SplashScreen
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun RegisterScreenDestination(navController: NavController) {
-    val viewModel = getViewModel<RegisterViewModel>()
-    Register(
-        state = viewModel.viewState.value,
+fun SplashScreenDestination(navController: NavController) {
+    val viewModel = getViewModel<SplashViewModel>()
+    SplashScreen(
         effectFlow = viewModel.effect,
-        onEventSent = viewModel::setEvent,
         onNavigationRequested = {
             when (it) {
-                is RegisterContracts.Effect.Navigation.ToLogin -> {
-                    navController.navigateUp()
+                SplashContracts.Effect.Navigation.ToLogin -> {
+                    navController.navigate(Login)
                 }
 
-                is RegisterContracts.Effect.Navigation.ToMain -> {
-                    navController.clearBackStack(Login)
+                is SplashContracts.Effect.Navigation.ToMain -> {
                     navController.navigate(
                         Home(
                             it.user.name.ifEmpty { null },

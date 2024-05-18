@@ -1,9 +1,5 @@
-package com.github.crisacm.sessionmanager.presentation.screens.login.composables
+package com.github.crisacm.sessionmanager.presentation.screens.register.composables
 
-import android.accounts.AccountManager
-import android.app.Activity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -27,55 +25,51 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.crisacm.sessionmanager.presentation.base.SIDE_EFFECTS_KEY
+import com.github.crisacm.sessionmanager.presentation.component.DefaultInput
 import com.github.crisacm.sessionmanager.presentation.component.EmailTextField
-import com.github.crisacm.sessionmanager.presentation.component.LoadingButton
 import com.github.crisacm.sessionmanager.presentation.component.PasswordTextField
-import com.github.crisacm.sessionmanager.presentation.screens.login.LoginContracts
-import com.google.android.gms.auth.GoogleAuthUtil
+import com.github.crisacm.sessionmanager.presentation.component.LoadingButton
+import com.github.crisacm.sessionmanager.presentation.screens.register.RegisterContracts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 @Composable
-fun LoginScreen(
-    state: LoginContracts.State,
-    effectFlow: Flow<LoginContracts.Effect>?,
-    onEventSent: (event: LoginContracts.Event) -> Unit,
-    onNavigationRequested: (navigationEffect: LoginContracts.Effect.Navigation) -> Unit
+fun Register(
+    state: RegisterContracts.State,
+    effectFlow: Flow<RegisterContracts.Effect>?,
+    onEventSent: (event: RegisterContracts.Event) -> Unit,
+    onNavigationRequested: (navigationEffect: RegisterContracts.Effect.Navigation) -> Unit
 ) {
+    val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
 
-    var username by rememberSaveable { mutableStateOf("c.a.c.m997@gmail.com") }
-    var password by rememberSaveable { mutableStateOf("123456") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(SIDE_EFFECTS_KEY) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is LoginContracts.Effect.Navigation.ToMain -> {
-                    onNavigationRequested(LoginContracts.Effect.Navigation.ToMain(effect.user))
+                is RegisterContracts.Effect.Navigation.ToMain -> {
+                    onNavigationRequested(RegisterContracts.Effect.Navigation.ToMain(effect.user))
                 }
 
-                is LoginContracts.Effect.Navigation.ToRegister -> {
-                    onNavigationRequested(LoginContracts.Effect.Navigation.ToRegister)
+                is RegisterContracts.Effect.Navigation.ToLogin -> {
+                    onNavigationRequested(RegisterContracts.Effect.Navigation.ToLogin)
                 }
 
-                is LoginContracts.Effect.ShowSnack -> {
+                is RegisterContracts.Effect.ShowSnack -> {
                     snackBarHostState.showSnackbar(effect.msg)
                 }
             }
         }?.collect()
-    }
-
-    val result = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            val accountName = it.data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-            onEventSent(LoginContracts.Event.SingInWithGoogle(accountName ?: ""))
-        }
     }
 
     Scaffold(
@@ -87,25 +81,46 @@ fun LoginScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            Text(
-                text = "Hello, Welcome back 👋🏻",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(24.dp, 36.dp, 24.dp, 0.dp)
-            )
+                    .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { onEventSent(RegisterContracts.Event.ToLogin) }
+                )
+                Text(
+                    text = "Create Account ✨",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(12.dp, 0.dp, 12.dp, 0.dp)
+                )
+            }
             Text(
-                text = "We need some information, its yust for ",
+                text = "We will need some of your information, don't worry, it's just routine.",
                 fontSize = 16.sp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp, 6.dp, 24.dp, 0.dp)
+                    .padding(24.dp, 12.dp, 24.dp, 0.dp)
             )
-
+            DefaultInput(
+                modifier = Modifier
+                    .padding(24.dp, 18.dp, 24.dp, 0.dp)
+                    .fillMaxWidth(),
+                textValue = name,
+                placeHolder = "name",
+                label = "User First Name",
+                isError = (state.errorNameText != null && state.errorNameText.isError),
+                isEnabled = !state.isLoading,
+                supportingText = state.errorNameText?.errorMessage.toString(),
+                isRequired = true,
+                onTextChange = { name = it }
+            )
             EmailTextField(
                 modifier = Modifier
-                    .padding(24.dp, 48.dp, 24.dp, 0.dp)
+                    .padding(24.dp, 18.dp, 24.dp, 0.dp)
                     .fillMaxWidth(),
                 textValue = username,
                 placeHolder = "user@mail.com",
@@ -116,7 +131,6 @@ fun LoginScreen(
                 isRequired = true,
                 onEmailChange = { username = it }
             )
-
             PasswordTextField(
                 modifier = Modifier
                     .padding(24.dp, 12.dp, 24.dp, 0.dp)
@@ -130,56 +144,27 @@ fun LoginScreen(
                 isRequired = true,
                 onTextChange = { password = it }
             )
-
             LoadingButton(
                 modifier = Modifier.padding(24.dp, 36.dp, 24.dp, 0.dp),
                 loading = state.isLoading
             ) {
-                onEventSent(LoginContracts.Event.SingIn(username, password))
+                onEventSent(RegisterContracts.Event.Register(name, username, password))
             }
-
-            Row(
-                modifier = Modifier.padding(0.dp, 36.dp, 0.dp, 36.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Divider(
-                    color = Color.LightGray, thickness = 1.dp, modifier = Modifier
-                        .padding(24.dp, 0.dp, 24.dp, 0.dp)
-                        .weight(1f)
-                )
-                Text(text = "Or sign in With", color = Color.Gray)
-                Divider(
-                    color = Color.LightGray, thickness = 1.dp, modifier = Modifier
-                        .padding(24.dp, 0.dp, 24.dp, 0.dp)
-                        .weight(1f)
-                )
-            }
-
-            GoogleButton(!state.isLoading) {
-                val intent = AccountManager
-                    .newChooseAccountIntent(
-                        null,
-                        null,
-                        arrayOf(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE),
-                        null,
-                        null,
-                        null,
-                        null
-                    )
-
-                result.launch(intent)
-            }
-
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier
                     .padding(24.dp)
-                    .fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "Do not have an account ?", fontSize = 16.sp, color = Color.Gray)
-                Text(text = "Create now", fontSize = 16.sp, color = Color.Blue, modifier = Modifier
-                    .padding(12.dp, 0.dp, 0.dp, 0.dp)
-                    .clickable { onEventSent(LoginContracts.Event.Register) }
+                Text(text = "Already have an account ?", fontSize = 16.sp, color = Color.Gray)
+                Text(
+                    text = "Sign In",
+                    fontSize = 16.sp,
+                    color = Color.Blue,
+                    modifier = Modifier
+                        .padding(12.dp, 0.dp, 0.dp, 0.dp)
+                        .clickable { onEventSent(RegisterContracts.Event.ToLogin) }
                 )
             }
         }
@@ -188,11 +173,11 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    LoginScreen(
-        state = LoginContracts.State(
-            isSplashVisible = false,
+fun RegisterPreview() {
+    Register(
+        state = RegisterContracts.State(
             isLoading = false,
+            errorNameText = null,
             errorUserText = null,
             errorPassText = null
         ),
@@ -204,11 +189,11 @@ fun LoginScreenPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenLoadingPreview() {
-    LoginScreen(
-        state = LoginContracts.State(
-            isSplashVisible = false,
+fun RegisterLoadingPreview() {
+    Register(
+        state = RegisterContracts.State(
             isLoading = true,
+            errorNameText = null,
             errorUserText = null,
             errorPassText = null
         ),

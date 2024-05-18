@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.presentation.screens.login
+package com.github.crisacm.sessionmanager.presentation.screens.register
 
 import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.ViewEvent
@@ -6,17 +6,16 @@ import com.github.crisacm.sessionmanager.presentation.base.ViewSideEffect
 import com.github.crisacm.sessionmanager.presentation.base.ViewState
 import com.github.crisacm.sessionmanager.util.FieldError
 
-class LoginContracts {
+class RegisterContracts {
 
     sealed interface Event : ViewEvent {
-        data object Register : Event
-        data class SingIn(val user: String, val password: String) : Event
-        data class SingInWithGoogle(val account: String) : Event
+        data class Register(val name: String, val user: String, val password: String) : Event
+        data object ToLogin : Event
     }
 
     data class State(
-        val isSplashVisible: Boolean,
         val isLoading: Boolean,
+        val errorNameText: FieldError?,
         val errorUserText: FieldError?,
         val errorPassText: FieldError?
     ) : ViewState
@@ -26,7 +25,7 @@ class LoginContracts {
 
         sealed interface Navigation : Effect {
             data class ToMain(val user: User) : Navigation
-            data object ToRegister : Navigation
+            data object ToLogin : Navigation
         }
     }
 }

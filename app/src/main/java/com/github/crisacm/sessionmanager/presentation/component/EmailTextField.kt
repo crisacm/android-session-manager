@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DefaultInput(
+fun EmailTextField(
     modifier: Modifier,
     textValue: String,
     placeHolder: String,
@@ -28,9 +28,9 @@ fun DefaultInput(
     supportingText: String = "",
     isEnabled: Boolean = true,
     isRequired: Boolean = false,
-    onTextChange: (String) -> Unit
+    onEmailChange: (String) -> Unit
 ) {
-    Column(modifier) {
+    Column(modifier = modifier) {
         if (label != null) {
             Row(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)) {
                 Text(
@@ -53,7 +53,7 @@ fun DefaultInput(
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = textValue,
-            onValueChange = { onTextChange(it) },
+            onValueChange = { onEmailChange(it) },
             placeholder = { Text(placeHolder) },
             enabled = isEnabled,
             isError = isError,
@@ -83,30 +83,35 @@ fun DefaultInput(
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultInputPreview() {
-    DefaultInput(
+fun EmailTextFieldPreview() {
+    EmailTextField(
         modifier = Modifier,
-        textValue = "",
-        placeHolder = "user name",
-        label = "Enter First Name",
+        textValue = "c.a.c.m997@gmail.com",
+        placeHolder = "user@mail.com",
+        label = "Enter Email",
         isError = false,
         isEnabled = true,
-        supportingText = "",
-        onTextChange = {}
+        isRequired = true,
+        onEmailChange = {}
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultInputErrorPreview() {
-    DefaultInput(
+fun EmailTextFieldErrorPreview() {
+    EmailTextField(
         modifier = Modifier,
-        textValue = "invalid_name",
-        placeHolder = "user name",
-        label = "Enter First Name",
+        textValue = "invalid_value",
+        placeHolder = "user@mail.com",
+        label = "Enter Email",
         isError = true,
         isEnabled = true,
         supportingText = "Please enter valid email",
-        onTextChange = {}
+        onEmailChange = { }
     )
+}
+
+fun isValidEmail(email: String): Boolean {
+    val emailRegex = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex()
+    return email.matches(emailRegex)
 }

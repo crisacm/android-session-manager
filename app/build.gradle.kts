@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.kotlin.serialization)
     kotlin("kapt")
 }
 
@@ -103,4 +104,8 @@ dependencies {
 
     // Logged
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // Navigation + Serialization
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 }

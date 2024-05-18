@@ -1,22 +1,20 @@
-package com.github.crisacm.sessionmanager.presentation.screens.splash
+package com.github.crisacm.sessionmanager.presentation.screens.home
 
-import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.ViewEvent
 import com.github.crisacm.sessionmanager.presentation.base.ViewSideEffect
 import com.github.crisacm.sessionmanager.presentation.base.ViewState
 
-object SplashContracts {
+object HomeContracts {
 
-    sealed interface Event : ViewEvent
+    sealed interface Event : ViewEvent {
+        data object ToLogin : Event
+    }
 
-    data class State(
-        val isSplashVisible: Boolean
-    ) : ViewState
+    class State : ViewState
 
     sealed interface Effect : ViewSideEffect {
         sealed interface Navigation : Effect {
             data object ToLogin : Navigation
-            data class ToMain(val user: User) : Navigation
         }
     }
 }

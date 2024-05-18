@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
-
 package com.github.crisacm.sessionmanager.presentation.screens.splash.composables
 
 import androidx.compose.animation.AnimatedVisibility
@@ -22,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -44,36 +41,39 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun SplashScreen(
-    state: SplashContracts.State,
     effectFlow: Flow<SplashContracts.Effect>?,
-    onEventSent: (event: SplashContracts.Event) -> Unit,
     onNavigationRequested: (navigationEffect: SplashContracts.Effect.Navigation) -> Unit
 ) {
     LaunchedEffect(SIDE_EFFECTS_KEY) {
-        effectFlow?.onEach { effect ->
-            when (effect) {
+        effectFlow?.onEach {
+            when (it) {
                 SplashContracts.Effect.Navigation.ToLogin -> {
                     onNavigationRequested(SplashContracts.Effect.Navigation.ToLogin)
                 }
 
-                SplashContracts.Effect.Navigation.ToMain -> {
-                    onNavigationRequested(SplashContracts.Effect.Navigation.ToMain)
+                is SplashContracts.Effect.Navigation.ToMain -> {
+                    onNavigationRequested(SplashContracts.Effect.Navigation.ToMain(it.user))
                 }
             }
         }?.collect()
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        // Animation of Splash Screen
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             AnimatedVisibility(
-                visible = state.isLoading,
+                visible = true,
                 enter = slideInVertically(
                     initialOffsetY = { -it },
                     animationSpec = tween(
-                        durationMillis = 5000,
+                        durationMillis = 500,
                         easing = LinearEasing
                     )
-                )
+                ),
             ) {
                 ConstraintLayout(
                     modifier = Modifier
@@ -81,7 +81,6 @@ fun SplashScreen(
                         .background(colorBlueLight)
                 ) {
                     val (box, text) = createRefs()
-
                     Box(
                         modifier = Modifier
                             .height(dimensionResource(R.dimen.start_content_size))
@@ -121,9 +120,7 @@ fun SplashScreen(
 @Composable
 fun SplashScreenPreview() {
     SplashScreen(
-        state = SplashContracts.State(true),
         effectFlow = null,
-        onEventSent = {},
         onNavigationRequested = {}
     )
 }

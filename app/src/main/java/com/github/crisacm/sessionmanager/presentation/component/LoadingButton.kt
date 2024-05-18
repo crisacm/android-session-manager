@@ -1,4 +1,4 @@
-package com.github.crisacm.sessionmanager.presentation.screens.login.composables
+package com.github.crisacm.sessionmanager.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoginButton(
+fun LoadingButton(
     modifier: Modifier,
     loading: Boolean,
     onClickAction: () -> Unit
@@ -71,12 +71,12 @@ fun LoginButton(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginButtonLoadingPreview() {
-    LoginButton(Modifier, true) {}
+fun LoadingButtonLoadingPreview() {
+    LoadingButton(Modifier, true) {}
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LoginButtonPreview() {
-    LoginButton(Modifier, false) {}
+fun LoadingButtonPreview() {
+    LoadingButton(Modifier, false) {}
 }

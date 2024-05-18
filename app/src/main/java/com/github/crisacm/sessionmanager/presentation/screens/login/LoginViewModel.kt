@@ -2,55 +2,83 @@ package com.github.crisacm.sessionmanager.presentation.screens.login
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
-import kotlinx.coroutines.delay
+import com.github.crisacm.sessionmanager.util.FieldValidations
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State, LoginContracts.Effect>() {
 
     override fun setInitialState(): LoginContracts.State =
         LoginContracts.State(
+            isSplashVisible = true,
             isLoading = false,
-            isErrorUserEmpty = false,
-            isErrorPassEmpty = false
+            errorUserText = null,
+            errorPassText = null
         )
 
     override fun handleEvent(event: LoginContracts.Event) {
         when (event) {
             is LoginContracts.Event.SingIn -> singInEvent(event.user, event.password)
             is LoginContracts.Event.Register -> setEffect { LoginContracts.Effect.Navigation.ToRegister }
-            is LoginContracts.Event.SingInWithGoogle -> singInWithGoogleEvent(event.account)
+            is LoginContracts.Event.SingInWithGoogle -> {}
         }
     }
 
     private fun singInEvent(user: String, pass: String) {
         viewModelScope.launch {
-            if (user.isEmpty()) {
-                setState { copy(isErrorUserEmpty = true) }
+            setState { copy(isLoading = true) }
+
+            FieldValidations.isEmpty(user)?.let {
+                setState { copy(isLoading = false, errorUserText = it) }
                 setEffect { LoginContracts.Effect.ShowSnack("Please enter a username") }
                 return@launch
             }
 
-            if (pass.isEmpty()) {
-                setState { copy(isErrorUserEmpty = false, isErrorPassEmpty = true) }
+            FieldValidations.isValidEmail(user)?.let {
+                setState { copy(isLoading = false, errorUserText = it) }
+                setEffect { LoginContracts.Effect.ShowSnack("Please enter a valid email") }
+                return@launch
+            }
+
+            FieldValidations.isEmpty(pass)?.let {
+                setState { copy(isLoading = false, errorUserText = null, errorPassText = it) }
                 setEffect { LoginContracts.Effect.ShowSnack("Please enter a password") }
                 return@launch
             }
 
-            setState { copy(isLoading = true, isErrorUserEmpty = false, isErrorPassEmpty = false) }
-            delay(1000)
-            setState { copy(isLoading = false) }
-            setEffect { LoginContracts.Effect.ShowSnack("Fail sign in") }
-            Log.i("Event", "singInEvent end")
+            signInWithEmailAndPassword(user, pass)
         }
     }
 
-    private fun singInWithGoogleEvent(account: String) {
-        viewModelScope.launch {
-            setState { copy(isLoading = true, isErrorUserEmpty = false, isErrorPassEmpty = false) }
-            delay(1000)
-            setState { copy(isLoading = false) }
-            setEffect { LoginContracts.Effect.ShowSnack("Fail sign in") }
-        }
+    private suspend fun signInWithEmailAndPassword(user: String, pass: String) = withContext(Dispatchers.IO) {
+        val auth = Firebase.auth
+        auth.signInWithEmailAndPassword(user, pass)
+            .addOnCompleteListener {
+                setState { copy(isLoading = false) }
+
+                if (it.isSuccessful) {
+                    setEffect {
+                        LoginContracts.Effect.Navigation.ToMain(
+                            User(
+                                auth.currentUser?.displayName.toString(),
+                                auth.currentUser?.email.toString(),
+                                auth.currentUser?.photoUrl.toString()
+                            )
+                        )
+                    }
+                } else {
+                    if (it.exception is FirebaseAuthInvalidUserException) {
+                        setEffect { LoginContracts.Effect.ShowSnack("Invalid user or password") }
+                    }
+
+                    Log.i("Error", it.exception.toString())
+                }
+            }
     }
 }
