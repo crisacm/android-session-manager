@@ -4,6 +4,7 @@ import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.ViewEvent
 import com.github.crisacm.sessionmanager.presentation.base.ViewSideEffect
 import com.github.crisacm.sessionmanager.presentation.base.ViewState
+import com.github.crisacm.sessionmanager.presentation.screens.login.googleSign.SignInResult
 import com.github.crisacm.sessionmanager.util.FieldError
 
 class LoginContracts {
@@ -11,7 +12,7 @@ class LoginContracts {
     sealed interface Event : ViewEvent {
         data object Register : Event
         data class SingIn(val user: String, val password: String) : Event
-        data class SingInWithGoogle(val account: String) : Event
+        data class SingInWithGoogle(val result: SignInResult) : Event
     }
 
     data class State(

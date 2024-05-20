@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">SessionManager</string>
     <string name="text_splash_screen">Session Manager Demo</string>
+    <string name="firebase_auth_server_key">1063751660389-t60b29ij89lqmvn2nuv0c0rk4jele00k.apps.googleusercontent.com</string>
 </resources>

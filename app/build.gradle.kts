@@ -101,6 +101,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
 
     // Logged
     implementation("com.jakewharton.timber:timber:5.0.1")
@@ -108,4 +109,7 @@ dependencies {
     // Navigation + Serialization
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+
+    // Google credentials
+    implementation("com.google.android.gms:play-services-auth:21.1.1")
 }
