@@ -1,5 +1,6 @@
 package com.github.crisacm.sessionmanager.presentation.screens.register.composables
 
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import com.github.crisacm.sessionmanager.presentation.component.EmailTextField
 import com.github.crisacm.sessionmanager.presentation.component.PasswordTextField
 import com.github.crisacm.sessionmanager.presentation.component.LoadingButton
 import com.github.crisacm.sessionmanager.presentation.screens.register.RegisterContracts
+import com.github.crisacm.sessionmanager.ui.theme.SessionManagerTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -174,31 +176,56 @@ fun Register(
 @Preview(showBackground = true)
 @Composable
 fun RegisterPreview() {
-    Register(
-        state = RegisterContracts.State(
-            isLoading = false,
-            errorNameText = null,
-            errorUserText = null,
-            errorPassText = null
-        ),
-        effectFlow = null,
-        onEventSent = {},
-        onNavigationRequested = {}
-    )
+    SessionManagerTheme {
+        Register(
+            state = RegisterContracts.State(
+                isLoading = false,
+                errorNameText = null,
+                errorUserText = null,
+                errorPassText = null
+            ),
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun RegisterPreviewDark() {
+    SessionManagerTheme {
+        Register(
+            state = RegisterContracts.State(
+                isLoading = false,
+                errorNameText = null,
+                errorUserText = null,
+                errorPassText = null
+            ),
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun RegisterLoadingPreview() {
-    Register(
-        state = RegisterContracts.State(
-            isLoading = true,
-            errorNameText = null,
-            errorUserText = null,
-            errorPassText = null
-        ),
-        effectFlow = null,
-        onEventSent = {},
-        onNavigationRequested = {}
-    )
+    SessionManagerTheme {
+        Register(
+            state = RegisterContracts.State(
+                isLoading = true,
+                errorNameText = null,
+                errorUserText = null,
+                errorPassText = null
+            ),
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
 }

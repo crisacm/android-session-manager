@@ -12,9 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.github.crisacm.sessionmanager.R
 
 @Composable
 fun GoogleButton(
@@ -26,14 +29,13 @@ fun GoogleButton(
             .padding(24.dp, 0.dp, 24.dp, 0.dp)
             .fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-        border = BorderStroke(2.dp, Color.LightGray),
+        border = BorderStroke(1.dp, Color.LightGray),
         shape = RoundedCornerShape(4.dp),
         enabled = isEnable,
         onClick = { onClick() }
     ) {
-        val imgUrl = "https://imagepng.org/wp-content/uploads/2019/08/google-icon-1.png"
-        Image(painter = rememberAsyncImagePainter(imgUrl), contentDescription = null, modifier = Modifier.size(24.dp))
-        Text(text = "Google", color = Color.Gray, modifier = Modifier.padding(12.dp, 0.dp, 0.dp, 0.dp))
+        Image(painter = painterResource(R.drawable.google), contentDescription = null, modifier = Modifier.size(24.dp))
+        Text(text = "Google", fontSize = 20.sp, color = Color.Gray, modifier = Modifier.padding(12.dp, 0.dp, 0.dp, 0.dp))
     }
 }
 

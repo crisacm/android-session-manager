@@ -1,9 +1,10 @@
 package com.github.crisacm.sessionmanager.presentation.screens.login.composables
 
-import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.app.UiModeManager
+import android.content.Context
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,25 +34,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.crisacm.sessionmanager.R
 import com.github.crisacm.sessionmanager.presentation.base.SIDE_EFFECTS_KEY
 import com.github.crisacm.sessionmanager.presentation.component.EmailTextField
 import com.github.crisacm.sessionmanager.presentation.component.LoadingButton
 import com.github.crisacm.sessionmanager.presentation.component.PasswordTextField
 import com.github.crisacm.sessionmanager.presentation.screens.login.LoginContracts
-import com.github.crisacm.sessionmanager.presentation.screens.login.googleSign.GoogleAuthUiClient
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.github.crisacm.sessionmanager.ui.theme.SessionManagerTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import timber.log.Timber
-import kotlin.math.sign
 
 
 @Composable
@@ -63,11 +54,17 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
-
-    var googleSignIn by remember { mutableStateOf<GoogleSignInAccount?>(null) }
+    val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+    val isNightModeActive = (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES)
 
     var username by rememberSaveable { mutableStateOf("c.a.c.m997@gmail.com") }
     var password by rememberSaveable { mutableStateOf("123456") }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            onEventSent(LoginContracts.Event.ManageSignInResult(it.data))
+        }
+    }
 
     LaunchedEffect(SIDE_EFFECTS_KEY) {
         effectFlow?.onEach { effect ->
@@ -83,32 +80,12 @@ fun LoginScreen(
                 is LoginContracts.Effect.ShowSnack -> {
                     snackBarHostState.showSnackbar(effect.msg)
                 }
-            }
-        }?.collect()
-    }
-
-    val googleAuthUiClient by lazy { GoogleAuthUiClient(context, Identity.getSignInClient(context)) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-        if (it.resultCode == RESULT_OK) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val signInResult = googleAuthUiClient.signInWithIntent(it.data ?: return@launch)
-                onEventSent(LoginContracts.Event.SingInWithGoogle(signInResult))
-            }
-        }
-    }
-
-    val result = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-            task.addOnSuccessListener { account ->
-                if (account != null) {
-                    googleSignIn = account
-                    // onEventSent(LoginContracts.Event.SingInWithGoogle(account))
+                
+                is LoginContracts.Effect.LaunchSelectGoogleAccount -> {
+                    launcher.launch(effect.intentSenderRequest)
                 }
             }
-        } else {
-            Timber.i("Can't get data form activity result")
-        }
+        }?.collect()
     }
 
     Scaffold(
@@ -189,25 +166,7 @@ fun LoginScreen(
             }
 
             GoogleButton(!state.isLoading) {
-                /*
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(context.getString(R.string.firebase_auth_server_key))
-                    .requestEmail()
-                    .build()
-
-                val googleSignInClient = GoogleSignIn.getClient(context, gso)
-
-                result.launch(googleSignInClient.signInIntent)
-                */
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val signInIntentSender = googleAuthUiClient.signIn()
-                    launcher.launch(
-                        IntentSenderRequest.Builder(
-                            signInIntentSender ?: return@launch
-                        ).build()
-                    )
-                }
+                onEventSent(LoginContracts.Event.SingInWGoogle(context))
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -217,7 +176,8 @@ fun LoginScreen(
                     .fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = "Do not have an account ?", fontSize = 16.sp, color = Color.Gray)
-                Text(text = "Create now", fontSize = 16.sp, color = Color.Blue, modifier = Modifier
+                val textColor = if (isNightModeActive) Color.Blue else Color.White
+                Text(text = "Create now", fontSize = 16.sp, color = textColor, modifier = Modifier
                     .padding(12.dp, 0.dp, 0.dp, 0.dp)
                     .clickable { onEventSent(LoginContracts.Event.Register) }
                 )
@@ -229,31 +189,56 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(
-        state = LoginContracts.State(
-            isSplashVisible = false,
-            isLoading = false,
-            errorUserText = null,
-            errorPassText = null
-        ),
-        effectFlow = null,
-        onEventSent = {},
-        onNavigationRequested = {}
-    )
+    SessionManagerTheme {
+        LoginScreen(
+            state = LoginContracts.State(
+                isSplashVisible = false,
+                isLoading = false,
+                errorUserText = null,
+                errorPassText = null
+            ),
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun LoginScreenPreviewDark() {
+    SessionManagerTheme {
+        LoginScreen(
+            state = LoginContracts.State(
+                isSplashVisible = false,
+                isLoading = false,
+                errorUserText = null,
+                errorPassText = null
+            ),
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
+}
+
+@Preview(showBackground = true,)
 @Composable
 fun LoginScreenLoadingPreview() {
-    LoginScreen(
-        state = LoginContracts.State(
-            isSplashVisible = false,
-            isLoading = true,
-            errorUserText = null,
-            errorPassText = null
-        ),
-        effectFlow = null,
-        onEventSent = {},
-        onNavigationRequested = {}
-    )
+    SessionManagerTheme {
+        LoginScreen(
+            state = LoginContracts.State(
+                isSplashVisible = false,
+                isLoading = true,
+                errorUserText = null,
+                errorPassText = null
+            ),
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
 }

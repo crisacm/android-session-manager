@@ -1,16 +1,19 @@
 package com.github.crisacm.sessionmanager.presentation.screens.login
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
-import com.github.crisacm.sessionmanager.presentation.screens.login.googleSign.SignInResult
+import com.github.crisacm.sessionmanager.presentation.screens.login.googleSign.GoogleAuthUiClient
 import com.github.crisacm.sessionmanager.util.FieldValidations
+import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +24,7 @@ import kotlinx.coroutines.withContext
 class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State, LoginContracts.Effect>() {
 
     private val auth = Firebase.auth
+    private lateinit var googleAuthUiClient: GoogleAuthUiClient
 
     override fun setInitialState(): LoginContracts.State =
         LoginContracts.State(
@@ -34,7 +38,8 @@ class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State,
         when (event) {
             is LoginContracts.Event.SingIn -> singInEvent(event.user, event.password)
             is LoginContracts.Event.Register -> setEffect { LoginContracts.Effect.Navigation.ToRegister }
-            is LoginContracts.Event.SingInWithGoogle -> signInWithGoogle(event.result)
+            is LoginContracts.Event.SingInWGoogle -> signInWithGoogle(event.context)
+            is LoginContracts.Event.ManageSignInResult -> manageSignInResult(event.data)
         }
     }
 
@@ -72,9 +77,34 @@ class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State,
             }
     }
 
-    private fun signInWithGoogle(result: SignInResult) {
+    private fun signInWithGoogle(context: Context) {
         viewModelScope.launch {
-            if (result.data != null) {
+            googleAuthUiClient = GoogleAuthUiClient(context, Identity.getSignInClient(context))
+            val signInIntentSender = googleAuthUiClient.signIn()
+
+            if (signInIntentSender == null) {
+                setEffect { LoginContracts.Effect.ShowSnack("Cannot get accounts, please verify your connection") }
+                return@launch
+            }
+
+            val intentSenderRequest = IntentSenderRequest
+                .Builder(signInIntentSender)
+                .build()
+
+            setEffect { LoginContracts.Effect.LaunchSelectGoogleAccount(intentSenderRequest) }
+        }
+    }
+
+    private fun manageSignInResult(data: Intent?) {
+        viewModelScope.launch {
+            if (data == null) {
+                setEffect { LoginContracts.Effect.ShowSnack("Can't get user account information") }
+                return@launch
+            }
+
+            val signInResult = googleAuthUiClient.signInWithIntent(data)
+
+            if (signInResult.data != null) {
                 setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
                 delay(500)
                 setEffect {
@@ -86,6 +116,10 @@ class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State,
                         )
                     )
                 }
+            }
+
+            if (signInResult.errorMessage != null) {
+                setEffect { LoginContracts.Effect.ShowSnack(signInResult.errorMessage.toString()) }
             }
         }
     }
@@ -105,10 +139,13 @@ class LoginViewModel : BaseViewModel<LoginContracts.Event, LoginContracts.State,
                     )
                 }
             } else {
-                if (it.exception is FirebaseAuthInvalidUserException) {
-                    setEffect { LoginContracts.Effect.ShowSnack("Invalid user or password") }
+                val error: String? = when (it.exception) {
+                    is FirebaseAuthInvalidUserException -> "Invalid user or password"
+                    is FirebaseNetworkException -> "Check your network connection"
+                    else -> null
                 }
 
+                error?.let { setEffect { LoginContracts.Effect.ShowSnack(it) } }
                 Log.i("Error", it.exception.toString())
             }
         }
