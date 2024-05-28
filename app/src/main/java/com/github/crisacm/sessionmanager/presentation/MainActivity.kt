@@ -4,14 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.crisacm.sessionmanager.navigation.Home
+import com.github.crisacm.sessionmanager.navigation.Login
 import com.github.crisacm.sessionmanager.navigation.Navigation
 import com.github.crisacm.sessionmanager.ui.theme.SessionManagerTheme
+import com.github.crisacm.sessionmanager.util.IntentNames
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,25 +18,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SessionManagerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Main(
-                        modifier = Modifier.padding(innerPadding)
+                val startDestination = when (intent.getStringExtra(IntentNames.START_DESTINATION)) {
+                    IntentNames.LOGIN -> Login
+                    IntentNames.HOME -> Home(
+                        intent.getStringExtra(IntentNames.NAME),
+                        intent.getStringExtra(IntentNames.EMAIL),
+                        intent.getStringExtra(IntentNames.PHOTO_URL)
                     )
+
+                    else -> Login
                 }
+
+                Navigation(startDestination)
             }
         }
-    }
-}
-
-@Composable
-fun Main(modifier: Modifier = Modifier) {
-    Navigation()
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainPreview() {
-    SessionManagerTheme {
-        Main()
     }
 }

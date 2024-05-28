@@ -2,18 +2,17 @@ package com.github.crisacm.sessionmanager.navigation
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-object Splash
+interface NavDestinations
 
 @Serializable
-object Login
+object Login : NavDestinations
 
 @Serializable
-object Register
+object Register : NavDestinations
 
 @Serializable
 data class Home(
     var name: String?,
     var email: String?,
     var photoUrl: String?
-)
+) : NavDestinations

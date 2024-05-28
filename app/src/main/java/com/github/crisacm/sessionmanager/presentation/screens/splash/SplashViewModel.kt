@@ -6,12 +6,15 @@ import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashViewModel : BaseViewModel<SplashContracts.Event, SplashContracts.State, SplashContracts.Effect>() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            delay(1000)
+
             val auth = Firebase.auth
             val currentUser = auth.currentUser
 

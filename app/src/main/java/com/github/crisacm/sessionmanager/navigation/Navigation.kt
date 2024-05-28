@@ -7,16 +7,14 @@ import androidx.navigation.compose.rememberNavController
 import com.github.crisacm.sessionmanager.navigation.destinations.HomeScreenDestination
 import com.github.crisacm.sessionmanager.navigation.destinations.LoginScreenDestination
 import com.github.crisacm.sessionmanager.navigation.destinations.RegisterScreenDestination
-import com.github.crisacm.sessionmanager.navigation.destinations.SplashScreenDestination
-import kotlinx.serialization.Serializable
 
 @Composable
-fun Navigation() {
+fun Navigation(startDestination: NavDestinations) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Splash
+        startDestination = startDestination
     ) {
         composable<Home> {
             HomeScreenDestination(
@@ -31,10 +29,6 @@ fun Navigation() {
 
         composable<Register> {
             RegisterScreenDestination(navController = navController)
-        }
-
-        composable<Splash> {
-            SplashScreenDestination(navController = navController)
         }
     }
 }

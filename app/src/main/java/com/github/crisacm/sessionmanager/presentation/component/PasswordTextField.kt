@@ -1,5 +1,7 @@
 package com.github.crisacm.sessionmanager.presentation.component
 
+import android.app.UiModeManager
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -37,15 +40,18 @@ fun PasswordTextField(
     isRequired: Boolean = false,
     onTextChange: (text: String) -> Unit
 ) {
+    val uiModeManager = LocalContext.current.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+    val isNightModeActive = (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES)
     val showPassword = remember { mutableStateOf(false) }
 
     Column(modifier) {
         if (label != null) {
             Row(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)) {
+                val textColor = if (isNightModeActive) Color.Black else Color.White
                 Text(
                     text = label,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = textColor
                 )
 
                 if (isRequired) {

@@ -2,4 +2,5 @@
 <resources>
     <dimen name="start_content_size">64dp</dimen>
     <dimen name="start_content_title_margin_bottom">64dp</dimen>
+    <dimen name="splash_screen_icon_size">36dp</dimen>
 </resources>

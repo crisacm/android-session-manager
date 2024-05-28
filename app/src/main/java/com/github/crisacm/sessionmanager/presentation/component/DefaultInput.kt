@@ -1,5 +1,7 @@
 package com.github.crisacm.sessionmanager.presentation.component
 
+import android.app.UiModeManager
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,9 +33,13 @@ fun DefaultInput(
     isRequired: Boolean = false,
     onTextChange: (String) -> Unit
 ) {
+    val uiModeManager = LocalContext.current.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+    val isNightModeActive = (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES)
+
     Column(modifier) {
         if (label != null) {
             Row(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)) {
+                val textColor = if (isNightModeActive) Color.Black else Color.White
                 Text(
                     text = label,
                     fontSize = 16.sp,
