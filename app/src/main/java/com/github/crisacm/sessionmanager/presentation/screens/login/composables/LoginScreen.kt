@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +38,7 @@ import com.github.crisacm.sessionmanager.presentation.component.LoadingButton
 import com.github.crisacm.sessionmanager.presentation.component.PasswordTextField
 import com.github.crisacm.sessionmanager.presentation.screens.login.LoginContracts
 import com.github.crisacm.sessionmanager.ui.theme.SessionManagerTheme
+import com.github.crisacm.sessionmanager.ui.theme.TextLinkColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -49,7 +50,6 @@ fun LoginScreen(
     onEventSent: (event: LoginContracts.Event) -> Unit,
     onNavigationRequested: (navigationEffect: LoginContracts.Effect.Navigation) -> Unit
 ) {
-    val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
 
     var username by rememberSaveable { mutableStateOf("c.a.c.m997@gmail.com") }
@@ -75,7 +75,7 @@ fun LoginScreen(
                 is LoginContracts.Effect.ShowSnack -> {
                     snackBarHostState.showSnackbar(effect.msg)
                 }
-                
+
                 is LoginContracts.Effect.LaunchSelectGoogleAccount -> {
                     result.launch(effect.intentSenderRequest)
                 }
@@ -107,30 +107,44 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(24.dp, 6.dp, 24.dp, 0.dp)
             )
+            Row(modifier = Modifier.padding(24.dp, 48.dp, 24.dp, 8.dp)) {
+                Text(text = "Email Address", fontSize = 16.sp)
+                Text(
+                    text = "*",
+                    fontSize = 16.sp,
+                    color = Color.Red,
+                    modifier = Modifier.padding(6.dp, 0.dp, 0.dp, 0.dp)
+                )
+            }
             EmailTextField(
                 modifier = Modifier
-                    .padding(24.dp, 48.dp, 24.dp, 0.dp)
+                    .padding(24.dp, 0.dp, 24.dp, 0.dp)
                     .fillMaxWidth(),
                 textValue = username,
                 placeHolder = "user@mail.com",
-                label = "Email Address",
                 isError = (state.errorUserText != null && state.errorUserText.isError),
                 isEnabled = !state.isLoading,
                 supportingText = state.errorUserText?.errorMessage.toString(),
-                isRequired = true,
                 onEmailChange = { username = it }
             )
+            Row(modifier = Modifier.padding(24.dp, 24.dp, 24.dp, 8.dp)) {
+                Text(text = "Password", fontSize = 16.sp)
+                Text(
+                    text = "*",
+                    fontSize = 16.sp,
+                    color = Color.Red,
+                    modifier = Modifier.padding(6.dp, 0.dp, 0.dp, 0.dp)
+                )
+            }
             PasswordTextField(
                 modifier = Modifier
-                    .padding(24.dp, 12.dp, 24.dp, 0.dp)
+                    .padding(24.dp, 0.dp, 24.dp, 0.dp)
                     .fillMaxWidth(),
                 textValue = password,
                 placeHolder = "password@123",
-                label = "Password",
                 isError = (state.errorPassText != null && state.errorPassText.isError),
                 supportedText = state.errorPassText?.errorMessage.toString(),
                 isEnable = !state.isLoading,
-                isRequired = true,
                 onTextChange = { password = it }
             )
             LoadingButton(
@@ -170,9 +184,11 @@ fun LoginScreen(
                     .fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = "Do not have an account ?", fontSize = 16.sp, color = Color.Gray)
-                Text(text = "Create now", fontSize = 16.sp, color = Color.Blue, modifier = Modifier
-                    .padding(12.dp, 0.dp, 0.dp, 0.dp)
-                    .clickable { onEventSent(LoginContracts.Event.Register) }
+                val textLinkColor = if (isSystemInDarkTheme()) TextLinkColor else Color.Blue
+                Text(text = "Create now", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = textLinkColor,
+                    modifier = Modifier
+                        .padding(12.dp, 0.dp, 0.dp, 0.dp)
+                        .clickable { onEventSent(LoginContracts.Event.Register) }
                 )
             }
         }

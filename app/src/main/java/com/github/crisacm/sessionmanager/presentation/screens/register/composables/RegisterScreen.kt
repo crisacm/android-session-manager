@@ -126,11 +126,9 @@ fun Register(
                     .fillMaxWidth(),
                 textValue = username,
                 placeHolder = "user@mail.com",
-                label = "Email Address",
                 isError = (state.errorUserText != null && state.errorUserText.isError),
                 isEnabled = !state.isLoading,
                 supportingText = state.errorUserText?.errorMessage.toString(),
-                isRequired = true,
                 onEmailChange = { username = it }
             )
             PasswordTextField(
@@ -139,11 +137,9 @@ fun Register(
                     .fillMaxWidth(),
                 textValue = password,
                 placeHolder = "password@123",
-                label = "Password",
                 isError = (state.errorPassText != null && state.errorPassText.isError),
                 supportedText = state.errorPassText?.errorMessage.toString(),
                 isEnable = !state.isLoading,
-                isRequired = true,
                 onTextChange = { password = it }
             )
             LoadingButton(

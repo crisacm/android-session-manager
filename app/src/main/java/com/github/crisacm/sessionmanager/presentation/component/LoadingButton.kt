@@ -35,36 +35,35 @@ fun LoadingButton(
             .fillMaxWidth()
             .height(40.dp)
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp),
-            shape = RoundedCornerShape(6.dp),
-            border = BorderStroke(2.dp, Color.LightGray)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+        if (!loading) {
+            AnimatedVisibility(
+                visible = !loading,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                Text(text = "Logging ...", modifier = Modifier.padding(end = 12.dp))
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 3.dp
-                )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
+                    shape = RoundedCornerShape(6.dp), onClick = { onClickAction() }
+                ) { Text(text = "Sign In") }
             }
-        }
-        AnimatedVisibility(
-            visible = !loading,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Button(
+        } else {
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),
-                shape = RoundedCornerShape(6.dp), onClick = { onClickAction() }
-            ) { Text(text = "Sign In") }
+                shape = RoundedCornerShape(6.dp),
+                border = BorderStroke(2.dp, Color.LightGray)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 3.dp)
+                }
+            }
         }
     }
 }
