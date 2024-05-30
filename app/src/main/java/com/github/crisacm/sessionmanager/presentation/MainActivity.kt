@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.navigation.Home
 import com.github.crisacm.sessionmanager.navigation.Login
 import com.github.crisacm.sessionmanager.navigation.Navigation
@@ -18,18 +19,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SessionManagerTheme {
-                val startDestination = when (intent.getStringExtra(IntentNames.START_DESTINATION)) {
-                    IntentNames.LOGIN -> Login
-                    IntentNames.HOME -> Home(
-                        intent.getStringExtra(IntentNames.NAME),
-                        intent.getStringExtra(IntentNames.EMAIL),
-                        intent.getStringExtra(IntentNames.PHOTO_URL)
-                    )
+                var user: User? = null
+                val isUserLoggedIn = when (intent.getStringExtra(IntentNames.START_DESTINATION)) {
+                    IntentNames.LOGIN -> false
+                    IntentNames.HOME -> {
+                        user = User(
+                            intent.getStringExtra(IntentNames.NAME) ?: "<Nothing>",
+                            intent.getStringExtra(IntentNames.EMAIL) ?: "<Nothing>",
+                            intent.getStringExtra(IntentNames.PHOTO_URL) ?: "<Nothing>"
+                        )
 
-                    else -> Login
+                        true
+                    }
+
+                    else -> false
                 }
 
-                Navigation(startDestination)
+                Navigation(isUserLoggedIn, user)
             }
         }
     }

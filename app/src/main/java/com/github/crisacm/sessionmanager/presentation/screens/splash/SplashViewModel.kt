@@ -19,12 +19,12 @@ class SplashViewModel : BaseViewModel<SplashContracts.Event, SplashContracts.Sta
                 if (currentUser == null) {
                     SplashContracts.Effect.Navigation.ToLogin
                 } else {
-                    val name = currentUser.displayName
-                    val email = currentUser.email
-                    val photoUrl = currentUser.photoUrl
+                    val name = currentUser.displayName ?: "<Nothing>"
+                    val email = currentUser.email ?: "<Nothing>"
+                    val photoUrl = currentUser.photoUrl ?: "<Nothing>"
 
                     SplashContracts.Effect.Navigation.ToMain(
-                        User(name.toString(), email.toString(), photoUrl.toString())
+                        User(name, email, photoUrl.toString())
                     )
                 }
             }
