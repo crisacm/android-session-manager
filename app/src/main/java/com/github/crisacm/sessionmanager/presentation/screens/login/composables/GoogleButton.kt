@@ -1,13 +1,17 @@
 package com.github.crisacm.sessionmanager.presentation.screens.login.composables
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,29 +22,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.github.crisacm.sessionmanager.R
+import com.github.crisacm.sessionmanager.ui.theme.SessionManagerTheme
 
 @Composable
 fun GoogleButton(
+    modifier: Modifier = Modifier,
     isEnable: Boolean = true,
     onClick: () -> Unit
 ) {
-    Button(
-        modifier = Modifier
-            .padding(24.dp, 0.dp, 24.dp, 0.dp)
-            .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+    OutlinedButton(
+        modifier = modifier.size(56.dp),
+        shape = CircleShape,
         border = BorderStroke(1.dp, Color.LightGray),
-        shape = RoundedCornerShape(4.dp),
+        contentPadding = PaddingValues(0.dp),
         enabled = isEnable,
-        onClick = { onClick() }
+        onClick = onClick
     ) {
-        Image(painter = painterResource(R.drawable.google), contentDescription = null, modifier = Modifier.size(24.dp))
-        Text(text = "Google", fontSize = 20.sp, color = Color.Gray, modifier = Modifier.padding(12.dp, 0.dp, 0.dp, 0.dp))
+        Image(
+            painter = painterResource(R.drawable.google),
+            contentDescription = null,
+            modifier = Modifier.size(30.dp)
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GoogleButtonPreview() {
-    GoogleButton {}
+    SessionManagerTheme {
+        GoogleButton {}
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun GoogleButtonPreviewDark() {
+    SessionManagerTheme {
+        GoogleButton {}
+    }
 }

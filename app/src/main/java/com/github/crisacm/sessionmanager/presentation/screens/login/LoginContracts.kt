@@ -1,6 +1,5 @@
 package com.github.crisacm.sessionmanager.presentation.screens.login
 
-import android.content.Context
 import android.content.Intent
 import androidx.activity.result.IntentSenderRequest
 import com.github.crisacm.sessionmanager.domain.model.User
@@ -14,15 +13,14 @@ class LoginContracts {
     sealed interface Event : ViewEvent {
         data object Register : Event
         data class SingIn(val user: String, val password: String) : Event
-        data class SingInWGoogle(val context: Context) : Event
+        data object SingInWGoogle : Event
         data class ManageSignInResult(val data: Intent?) : Event
     }
 
     data class State(
-        val isSplashVisible: Boolean,
-        val isLoading: Boolean,
-        val errorUserText: FieldError?,
-        val errorPassText: FieldError?
+        val isLoading: Boolean = false,
+        val errorUserText: FieldError? = null,
+        val errorPassText: FieldError? = null
     ) : ViewState
 
     sealed interface Effect : ViewSideEffect {

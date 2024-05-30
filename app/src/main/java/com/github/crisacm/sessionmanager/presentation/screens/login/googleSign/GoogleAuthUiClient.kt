@@ -3,12 +3,11 @@ package com.github.crisacm.sessionmanager.presentation.screens.login.googleSign
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.util.Log
 import com.github.crisacm.sessionmanager.R
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -18,18 +17,16 @@ import timber.log.Timber
 
 class GoogleAuthUiClient(
     private val context: Context,
-    private val oneTapClient: SignInClient
+    private val auth: FirebaseAuth,
+    private val signInClient: SignInClient
 ) {
-    private val auth = Firebase.auth
-
     suspend fun signIn(): IntentSender? {
         val result = try {
-            oneTapClient.beginSignIn(
+            signInClient.beginSignIn(
                 buildSignInRequest()
             ).await()
         } catch (e: Exception) {
-            e.printStackTrace()
-            if (e is CancellationException) throw e
+            Timber.e("Error: ${e.message}")
             null
         }
 
@@ -37,25 +34,18 @@ class GoogleAuthUiClient(
     }
 
     suspend fun signInWithIntent(intent: Intent): SignInResult {
-        val credential = oneTapClient.getSignInCredentialFromIntent(intent)
+        val credential = signInClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
 
         return try {
             val user = auth.signInWithCredential(googleCredentials).await().user
             SignInResult(
-                data = user?.run {
-                    UserData(
-                        userId = uid,
-                        username = displayName,
-                        profilePictureUrl = photoUrl?.toString()
-                    )
-                },
+                data = user?.run { getSignedInUser() },
                 errorMessage = null
             )
         } catch (e: Exception) {
-            e.printStackTrace()
-            if (e is CancellationException) throw e
+            Timber.e("Error: ${e.message}")
             SignInResult(
                 data = null,
                 errorMessage = e.message
@@ -63,17 +53,7 @@ class GoogleAuthUiClient(
         }
     }
 
-    suspend fun signOut() {
-        try {
-            oneTapClient.signOut().await()
-            auth.signOut()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if (e is CancellationException) throw e
-        }
-    }
-
-    fun getSignedInUser(): UserData? = auth.currentUser?.run {
+    private fun getSignedInUser(): UserData? = auth.currentUser?.run {
         UserData(
             userId = uid,
             username = displayName,

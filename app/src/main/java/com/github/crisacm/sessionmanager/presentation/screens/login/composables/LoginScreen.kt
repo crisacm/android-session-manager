@@ -1,8 +1,6 @@
 package com.github.crisacm.sessionmanager.presentation.screens.login.composables
 
 import android.app.Activity.RESULT_OK
-import android.app.UiModeManager
-import android.content.Context
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +42,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
-
 @Composable
 fun LoginScreen(
     state: LoginContracts.State,
@@ -54,13 +51,11 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
-    val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-    val isNightModeActive = (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES)
 
     var username by rememberSaveable { mutableStateOf("c.a.c.m997@gmail.com") }
     var password by rememberSaveable { mutableStateOf("123456") }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+    val result = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
         if (it.resultCode == RESULT_OK) {
             onEventSent(LoginContracts.Event.ManageSignInResult(it.data))
         }
@@ -82,7 +77,7 @@ fun LoginScreen(
                 }
                 
                 is LoginContracts.Effect.LaunchSelectGoogleAccount -> {
-                    launcher.launch(effect.intentSenderRequest)
+                    result.launch(effect.intentSenderRequest)
                 }
             }
         }?.collect()
@@ -112,7 +107,6 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(24.dp, 6.dp, 24.dp, 0.dp)
             )
-
             EmailTextField(
                 modifier = Modifier
                     .padding(24.dp, 48.dp, 24.dp, 0.dp)
@@ -126,7 +120,6 @@ fun LoginScreen(
                 isRequired = true,
                 onEmailChange = { username = it }
             )
-
             PasswordTextField(
                 modifier = Modifier
                     .padding(24.dp, 12.dp, 24.dp, 0.dp)
@@ -140,14 +133,10 @@ fun LoginScreen(
                 isRequired = true,
                 onTextChange = { password = it }
             )
-
             LoadingButton(
                 modifier = Modifier.padding(24.dp, 36.dp, 24.dp, 0.dp),
                 loading = state.isLoading
-            ) {
-                onEventSent(LoginContracts.Event.SingIn(username, password))
-            }
-
+            ) { onEventSent(LoginContracts.Event.SingIn(username, password)) }
             Row(
                 modifier = Modifier.padding(0.dp, 36.dp, 0.dp, 36.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -164,11 +153,16 @@ fun LoginScreen(
                         .weight(1f)
                 )
             }
-
-            GoogleButton(!state.isLoading) {
-                onEventSent(LoginContracts.Event.SingInWGoogle(context))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                GoogleButton(
+                    isEnable = !state.isLoading,
+                    onClick = { onEventSent(LoginContracts.Event.SingInWGoogle) }
+                )
             }
-
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier
@@ -176,8 +170,7 @@ fun LoginScreen(
                     .fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = "Do not have an account ?", fontSize = 16.sp, color = Color.Gray)
-                val textColor = if (isNightModeActive) Color.Blue else Color.White
-                Text(text = "Create now", fontSize = 16.sp, color = textColor, modifier = Modifier
+                Text(text = "Create now", fontSize = 16.sp, color = Color.Blue, modifier = Modifier
                     .padding(12.dp, 0.dp, 0.dp, 0.dp)
                     .clickable { onEventSent(LoginContracts.Event.Register) }
                 )
@@ -191,12 +184,7 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     SessionManagerTheme {
         LoginScreen(
-            state = LoginContracts.State(
-                isSplashVisible = false,
-                isLoading = false,
-                errorUserText = null,
-                errorPassText = null
-            ),
+            state = LoginContracts.State(isLoading = false),
             effectFlow = null,
             onEventSent = {},
             onNavigationRequested = {}
@@ -204,20 +192,12 @@ fun LoginScreenPreview() {
     }
 }
 
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LoginScreenPreviewDark() {
     SessionManagerTheme {
         LoginScreen(
-            state = LoginContracts.State(
-                isSplashVisible = false,
-                isLoading = false,
-                errorUserText = null,
-                errorPassText = null
-            ),
+            state = LoginContracts.State(isLoading = false),
             effectFlow = null,
             onEventSent = {},
             onNavigationRequested = {}
@@ -225,17 +205,12 @@ fun LoginScreenPreviewDark() {
     }
 }
 
-@Preview(showBackground = true,)
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenLoadingPreview() {
     SessionManagerTheme {
         LoginScreen(
-            state = LoginContracts.State(
-                isSplashVisible = false,
-                isLoading = true,
-                errorUserText = null,
-                errorPassText = null
-            ),
+            state = LoginContracts.State(isLoading = true),
             effectFlow = null,
             onEventSent = {},
             onNavigationRequested = {}
