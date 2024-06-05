@@ -1,6 +1,7 @@
 package com.github.crisacm.sessionmanager.presentation.screens.home.composables
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -30,11 +31,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.github.crisacm.sessionmanager.R
-import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.SIDE_EFFECTS_KEY
 import com.github.crisacm.sessionmanager.presentation.component.AppBar
 import com.github.crisacm.sessionmanager.presentation.component.AppBarAction
 import com.github.crisacm.sessionmanager.presentation.screens.home.HomeContracts
+import com.github.crisacm.sessionmanager.ui.theme.SessionManagerTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -42,7 +43,6 @@ import kotlinx.coroutines.flow.onEach
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Home(
-    user: User,
     effectFlow: Flow<HomeContracts.Effect>?,
     onEventSent: (event: HomeContracts.Event) -> Unit,
     onNavigationRequested: (navigationEffect: HomeContracts.Effect.Navigation) -> Unit
@@ -93,7 +93,7 @@ fun Home(
                     modifier = Modifier.size(84.dp),
                     shape = CircleShape
                 ) {
-                    if (user.photoUrl.isEmpty()) {
+                    if ("user.photoUrl".isEmpty()) {
                         Image(
                             painter = painterResource(R.drawable.github),
                             contentDescription = null,
@@ -104,7 +104,7 @@ fun Home(
                     } else {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(user.photoUrl)
+                                .data("user.photoUrl")
                                 .crossfade(true)
                                 .build(),
                             placeholder = painterResource(R.drawable.github),
@@ -120,14 +120,14 @@ fun Home(
                     Row {
                         Text(text = "Name:", fontWeight = FontWeight.Bold)
                         Text(
-                            text = user.name.ifEmpty { "<Nothing>" },
+                            text = "user.name".ifEmpty { "<Nothing>" },
                             modifier = Modifier.padding(12.dp, 0.dp, 0.dp, 0.dp)
                         )
                     }
                     Row {
                         Text(text = "Email:", fontWeight = FontWeight.Bold)
                         Text(
-                            text = user.email.ifEmpty { "<Nothing>" },
+                            text = "user.email".ifEmpty { "<Nothing>" },
                             modifier = Modifier.padding(12.dp, 0.dp, 0.dp, 0.dp)
                         )
                     }
@@ -147,10 +147,23 @@ fun Home(
 @Preview
 @Composable
 fun HomePreview() {
-    Home(
-        user = User("", "", ""),
-        effectFlow = null,
-        onEventSent = {},
-        onNavigationRequested = {}
-    )
+    SessionManagerTheme {
+        Home(
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HomePreviewDark() {
+    SessionManagerTheme {
+        Home(
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
+    }
 }

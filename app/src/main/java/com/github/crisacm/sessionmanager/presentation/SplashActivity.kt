@@ -6,10 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.github.crisacm.sessionmanager.presentation.base.SIDE_EFFECTS_KEY
 import com.github.crisacm.sessionmanager.presentation.screens.splash.SplashContracts
@@ -43,13 +40,7 @@ class SplashActivity : ComponentActivity() {
                             .apply {
                                 val destination = when (it) {
                                     SplashContracts.Effect.Navigation.ToLogin -> IntentNames.LOGIN
-                                    is SplashContracts.Effect.Navigation.ToMain -> {
-                                        putExtra(IntentNames.NAME, it.user.name)
-                                        putExtra(IntentNames.EMAIL, it.user.email)
-                                        putExtra(IntentNames.PHOTO_URL, it.user.photoUrl)
-
-                                        IntentNames.HOME
-                                    }
+                                    SplashContracts.Effect.Navigation.ToMain -> IntentNames.HOME
                                 }
 
                                 putExtra(IntentNames.START_DESTINATION, destination)

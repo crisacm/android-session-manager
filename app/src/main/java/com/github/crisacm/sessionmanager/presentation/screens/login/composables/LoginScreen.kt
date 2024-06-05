@@ -65,7 +65,7 @@ fun LoginScreen(
         effectFlow?.onEach { effect ->
             when (effect) {
                 is LoginContracts.Effect.Navigation.ToMain -> {
-                    onNavigationRequested(LoginContracts.Effect.Navigation.ToMain(effect.user))
+                    onNavigationRequested(LoginContracts.Effect.Navigation.ToMain)
                 }
 
                 is LoginContracts.Effect.Navigation.ToRegister -> {

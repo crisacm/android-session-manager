@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.viewModelScope
-import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.github.crisacm.sessionmanager.presentation.screens.login.googleSign.GoogleAuthUiClient
 import com.github.crisacm.sessionmanager.util.FieldValidations
@@ -13,7 +12,6 @@ import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -22,10 +20,6 @@ class LoginViewModel(
     private val context: Context,
     private val appIoDispatcher: CoroutineDispatcher
 ) : BaseViewModel<LoginContracts.Event, LoginContracts.State, LoginContracts.Effect>() {
-
-    companion object {
-        private const val DELAY_0_5S = 500L
-    }
 
     private val googleAuthUiClient by lazy { GoogleAuthUiClient(context, auth, Identity.getSignInClient(context)) }
 
@@ -74,16 +68,7 @@ class LoginViewModel(
 
                         if (it.isSuccessful) {
                             setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
-                            delay(DELAY_0_5S)
-                            setEffect {
-                                LoginContracts.Effect.Navigation.ToMain(
-                                    User(
-                                        auth.currentUser?.displayName.toString(),
-                                        auth.currentUser?.email.toString(),
-                                        auth.currentUser?.photoUrl.toString()
-                                    )
-                                )
-                            }
+                            setEffect { LoginContracts.Effect.Navigation.ToMain }
                         } else {
                             val error: String? = when (it.exception) {
                                 is FirebaseAuthInvalidUserException -> "Invalid user or password"
@@ -132,16 +117,7 @@ class LoginViewModel(
 
             if (signInResult.data != null) {
                 setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
-                delay(DELAY_0_5S)
-                setEffect {
-                    LoginContracts.Effect.Navigation.ToMain(
-                        User(
-                            auth.currentUser?.displayName.toString(),
-                            auth.currentUser?.email.toString(),
-                            auth.currentUser?.photoUrl.toString()
-                        )
-                    )
-                }
+                setEffect { LoginContracts.Effect.Navigation.ToMain }
             }
 
             if (signInResult.errorMessage != null) {

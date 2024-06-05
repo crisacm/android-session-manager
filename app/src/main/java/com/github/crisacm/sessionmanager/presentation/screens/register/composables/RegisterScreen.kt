@@ -60,7 +60,7 @@ fun Register(
         effectFlow?.onEach { effect ->
             when (effect) {
                 is RegisterContracts.Effect.Navigation.ToMain -> {
-                    onNavigationRequested(RegisterContracts.Effect.Navigation.ToMain(effect.user))
+                    onNavigationRequested(RegisterContracts.Effect.Navigation.ToMain)
                 }
 
                 is RegisterContracts.Effect.Navigation.ToLogin -> {

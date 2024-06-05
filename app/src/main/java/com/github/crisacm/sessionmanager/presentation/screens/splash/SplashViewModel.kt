@@ -1,7 +1,6 @@
 package com.github.crisacm.sessionmanager.presentation.screens.splash
 
 import androidx.lifecycle.viewModelScope
-import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -19,13 +18,7 @@ class SplashViewModel : BaseViewModel<SplashContracts.Event, SplashContracts.Sta
                 if (currentUser == null) {
                     SplashContracts.Effect.Navigation.ToLogin
                 } else {
-                    val name = currentUser.displayName ?: "<Nothing>"
-                    val email = currentUser.email ?: "<Nothing>"
-                    val photoUrl = currentUser.photoUrl ?: "<Nothing>"
-
-                    SplashContracts.Effect.Navigation.ToMain(
-                        User(name, email, photoUrl.toString())
-                    )
+                    SplashContracts.Effect.Navigation.ToMain
                 }
             }
         }

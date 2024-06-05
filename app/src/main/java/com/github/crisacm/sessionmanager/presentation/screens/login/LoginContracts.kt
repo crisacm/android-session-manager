@@ -2,7 +2,6 @@ package com.github.crisacm.sessionmanager.presentation.screens.login
 
 import android.content.Intent
 import androidx.activity.result.IntentSenderRequest
-import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.ViewEvent
 import com.github.crisacm.sessionmanager.presentation.base.ViewSideEffect
 import com.github.crisacm.sessionmanager.presentation.base.ViewState
@@ -28,7 +27,7 @@ class LoginContracts {
         data class LaunchSelectGoogleAccount(val intentSenderRequest: IntentSenderRequest) : Effect
 
         sealed interface Navigation : Effect {
-            data class ToMain(val user: User) : Navigation
+            data object ToMain : Navigation
             data object ToRegister : Navigation
         }
     }

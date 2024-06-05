@@ -9,8 +9,4 @@ object Login
 object Register
 
 @Serializable
-data class Home(
-    var name: String?,
-    var email: String?,
-    var photoUrl: String?
-)
+object Home

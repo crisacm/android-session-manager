@@ -3,6 +3,7 @@ package com.github.crisacm.sessionmanager.navigation.destinations
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.github.crisacm.sessionmanager.navigation.Home
+import com.github.crisacm.sessionmanager.navigation.Login
 import com.github.crisacm.sessionmanager.navigation.Register
 import com.github.crisacm.sessionmanager.presentation.screens.login.LoginContracts
 import com.github.crisacm.sessionmanager.presentation.screens.login.LoginViewModel
@@ -18,17 +19,12 @@ fun LoginScreenDestination(navController: NavController) {
         onEventSent = viewModel::setEvent,
         onNavigationRequested = {
             when (it) {
-                is LoginContracts.Effect.Navigation.ToMain -> {
-                    navController.navigate(
-                        Home(
-                            it.user.name.ifEmpty { null },
-                            it.user.email.ifEmpty { null },
-                            it.user.photoUrl.ifEmpty { null }
-                        )
-                    )
+                LoginContracts.Effect.Navigation.ToMain -> {
+                    navController.popBackStack()
+                    navController.navigate(Home)
                 }
-
-                is LoginContracts.Effect.Navigation.ToRegister -> {
+                LoginContracts.Effect.Navigation.ToRegister -> {
+                    navController.popBackStack()
                     navController.navigate(Register)
                 }
             }

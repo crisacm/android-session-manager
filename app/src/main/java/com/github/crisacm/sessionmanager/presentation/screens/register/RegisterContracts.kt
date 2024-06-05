@@ -1,6 +1,5 @@
 package com.github.crisacm.sessionmanager.presentation.screens.register
 
-import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.ViewEvent
 import com.github.crisacm.sessionmanager.presentation.base.ViewSideEffect
 import com.github.crisacm.sessionmanager.presentation.base.ViewState
@@ -24,7 +23,7 @@ class RegisterContracts {
         data class ShowSnack(val msg: String) : Effect
 
         sealed interface Navigation : Effect {
-            data class ToMain(val user: User) : Navigation
+            data object ToMain : Navigation
             data object ToLogin : Navigation
         }
     }

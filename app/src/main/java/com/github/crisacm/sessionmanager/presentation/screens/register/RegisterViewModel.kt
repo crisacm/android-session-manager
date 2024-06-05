@@ -85,15 +85,7 @@ class RegisterViewModel : BaseViewModel<RegisterContracts.Event, RegisterContrac
                         }
                         setEffect { RegisterContracts.Effect.ShowSnack("User register successfully") }
                         delay(500)
-                        setEffect {
-                            RegisterContracts.Effect.Navigation.ToMain(
-                                User(
-                                    firebaseUser?.displayName.toString(),
-                                    firebaseUser?.email.toString(),
-                                    firebaseUser?.photoUrl.toString()
-                                )
-                            )
-                        }
+                        setEffect { RegisterContracts.Effect.Navigation.ToMain }
                     } else {
                         setState {
                             copy(

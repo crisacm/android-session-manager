@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.github.crisacm.sessionmanager.navigation.Home
 import com.github.crisacm.sessionmanager.navigation.Login
+import com.github.crisacm.sessionmanager.navigation.Register
 import com.github.crisacm.sessionmanager.presentation.screens.register.RegisterContracts
 import com.github.crisacm.sessionmanager.presentation.screens.register.RegisterViewModel
 import com.github.crisacm.sessionmanager.presentation.screens.register.composables.Register
@@ -18,19 +19,13 @@ fun RegisterScreenDestination(navController: NavController) {
         onEventSent = viewModel::setEvent,
         onNavigationRequested = {
             when (it) {
-                is RegisterContracts.Effect.Navigation.ToLogin -> {
+                RegisterContracts.Effect.Navigation.ToLogin -> {
+                    navController.popBackStack()
                     navController.navigateUp()
                 }
-
-                is RegisterContracts.Effect.Navigation.ToMain -> {
-                    navController.clearBackStack(Login)
-                    navController.navigate(
-                        Home(
-                            it.user.name.ifEmpty { null },
-                            it.user.email.ifEmpty { null },
-                            it.user.photoUrl.ifEmpty { null }
-                        )
-                    )
+                RegisterContracts.Effect.Navigation.ToMain -> {
+                    navController.popBackStack()
+                    navController.navigate(Home)
                 }
             }
         }
