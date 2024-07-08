@@ -5,10 +5,10 @@ plugins {
 
 android {
     namespace = "com.github.crisacm.module.sessionmanager"
-    compileSdk = 34
+    compileSdk = AppConfig.compileSdk
 
     defaultConfig {
-        minSdk = 24
+        minSdk = AppConfig.minSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
