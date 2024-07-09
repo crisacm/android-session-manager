@@ -1,25 +1,26 @@
 package com.github.crisacm.sessionmanager.presentation.screens.splash
 
 import androidx.lifecycle.viewModelScope
+import com.github.crisacm.module.sessionmanager.SessionManager
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
+import javax.inject.Inject
 
-class SplashViewModel : BaseViewModel<SplashContracts.Event, SplashContracts.State, SplashContracts.Effect>() {
+class SplashViewModel(
+    private val sessionManager: SessionManager
+) : BaseViewModel<SplashContracts.Event, SplashContracts.State, SplashContracts.Effect>() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val auth = Firebase.auth
-            val currentUser = auth.currentUser
-
-            setEffect {
-                if (currentUser == null) {
-                    SplashContracts.Effect.Navigation.ToLogin
-                } else {
-                    SplashContracts.Effect.Navigation.ToMain
-                }
+            if (sessionManager.isSignIn().first()) {
+                setEffect { SplashContracts.Effect.Navigation.ToMain }
+            } else {
+                setEffect { SplashContracts.Effect.Navigation.ToLogin }
             }
         }
     }

@@ -52,6 +52,7 @@ fun LoginScreen(
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
 
+    // This parameters are used only for testing purpose
     var username by rememberSaveable { mutableStateOf("c.a.c.m997@gmail.com") }
     var password by rememberSaveable { mutableStateOf("123456") }
 

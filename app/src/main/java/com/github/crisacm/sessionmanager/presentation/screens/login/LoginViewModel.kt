@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.viewModelScope
+import com.github.crisacm.module.sessionmanager.SessionManager
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.github.crisacm.sessionmanager.presentation.screens.login.googleSign.GoogleAuthUiClient
 import com.github.crisacm.sessionmanager.util.FieldValidations
@@ -17,6 +18,7 @@ import timber.log.Timber
 
 class LoginViewModel(
     private val auth: FirebaseAuth,
+    private val sessionManager: SessionManager,
     private val context: Context,
     private val appIoDispatcher: CoroutineDispatcher
 ) : BaseViewModel<LoginContracts.Event, LoginContracts.State, LoginContracts.Effect>() {
@@ -64,12 +66,13 @@ class LoginViewModel(
             auth.signInWithEmailAndPassword(user, pass)
                 .addOnCompleteListener {
                     viewModelScope.launch(appIoDispatcher) {
-                        setState { copy(isLoading = false) }
-
                         if (it.isSuccessful) {
+                            sessionManager.signIn(user, pass)
                             setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
                             setEffect { LoginContracts.Effect.Navigation.ToMain }
                         } else {
+                            setState { copy(isLoading = false) }
+
                             val error: String? = when (it.exception) {
                                 is FirebaseAuthInvalidUserException -> "Invalid user or password"
                                 is FirebaseNetworkException -> "Check your network connection"
@@ -106,9 +109,8 @@ class LoginViewModel(
 
     private fun manageSignInResult(data: Intent?) {
         viewModelScope.launch(appIoDispatcher) {
-            setState { copy(isLoading = false) }
-
             if (data == null) {
+                setState { copy(isLoading = false) }
                 setEffect { LoginContracts.Effect.ShowSnack("Can't get user account information") }
                 return@launch
             }
@@ -116,11 +118,13 @@ class LoginViewModel(
             val signInResult = googleAuthUiClient.signInWithIntent(data)
 
             if (signInResult.data != null) {
+                sessionManager.signIn(auth.currentUser?.displayName.toString(), "google")
                 setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
                 setEffect { LoginContracts.Effect.Navigation.ToMain }
             }
 
             if (signInResult.errorMessage != null) {
+                setState { copy(isLoading = false) }
                 setEffect { LoginContracts.Effect.ShowSnack(signInResult.errorMessage.toString()) }
             }
         }

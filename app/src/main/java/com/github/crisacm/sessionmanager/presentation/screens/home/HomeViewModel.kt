@@ -1,14 +1,15 @@
 package com.github.crisacm.sessionmanager.presentation.screens.home
 
 import androidx.lifecycle.viewModelScope
+import com.github.crisacm.module.sessionmanager.SessionManager
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HomeViewModel : BaseViewModel<HomeContracts.Event, HomeContracts.State, HomeContracts.Effect>() {
+class HomeViewModel(
+    private val sessionManager: SessionManager
+) : BaseViewModel<HomeContracts.Event, HomeContracts.State, HomeContracts.Effect>() {
 
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
@@ -22,7 +23,7 @@ class HomeViewModel : BaseViewModel<HomeContracts.Event, HomeContracts.State, Ho
 
     private fun logout() {
         viewModelScope.launch(ioDispatcher) {
-            Firebase.auth.signOut()
+            sessionManager.logout()
             setEffect { HomeContracts.Effect.Navigation.ToLogin }
         }
     }

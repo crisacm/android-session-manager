@@ -1,6 +1,7 @@
 package com.github.crisacm.sessionmanager.presentation.screens.register
 
 import androidx.lifecycle.viewModelScope
+import com.github.crisacm.module.sessionmanager.SessionManager
 import com.github.crisacm.sessionmanager.domain.model.User
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.github.crisacm.sessionmanager.util.FieldValidations
@@ -15,7 +16,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class RegisterViewModel : BaseViewModel<RegisterContracts.Event, RegisterContracts.State, RegisterContracts.Effect>() {
+class RegisterViewModel(
+    private val sessionManager: SessionManager
+) : BaseViewModel<RegisterContracts.Event, RegisterContracts.State, RegisterContracts.Effect>() {
 
     private val ioDispatcher = Dispatchers.IO
 
@@ -73,7 +76,7 @@ class RegisterViewModel : BaseViewModel<RegisterContracts.Event, RegisterContrac
                     Timber.i(exception?.message.toString())
                 }
 
-                createUser(email, pass) { isRegister, firebaseUser, e ->
+                createUser(email, pass) { isRegister, _, e ->
                     if (isRegister) {
                         setState {
                             copy(
@@ -84,6 +87,7 @@ class RegisterViewModel : BaseViewModel<RegisterContracts.Event, RegisterContrac
                             )
                         }
                         setEffect { RegisterContracts.Effect.ShowSnack("User register successfully") }
+                        sessionManager.signIn(email, pass)
                         delay(500)
                         setEffect { RegisterContracts.Effect.Navigation.ToMain }
                     } else {
