@@ -20,5 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "SessionManager"
-include(":app")
-include(":android-session-manager")
+include(":app", ":android-session-manager")
