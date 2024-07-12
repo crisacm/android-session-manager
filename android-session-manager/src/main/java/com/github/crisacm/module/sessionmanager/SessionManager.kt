@@ -11,5 +11,6 @@ interface SessionManager {
         password: String,
         args: Map<String, String> = emptyMap()
     )
+    // TODO: Hacer que cuando se cierre la sesión, retorne la información de la sesión cerrada.
     suspend fun logout()
 }
