@@ -23,8 +23,9 @@ class HomeViewModel(
 
     private fun logout() {
         viewModelScope.launch(ioDispatcher) {
-            sessionManager.logout()
-            setEffect { HomeContracts.Effect.Navigation.ToLogin }
+            sessionManager.signOut()
+                .onSuccess { setEffect { HomeContracts.Effect.Navigation.ToLogin } }
+                .onFailure { setEffect { HomeContracts.Effect.ShowToast("Error") } }
         }
     }
 }

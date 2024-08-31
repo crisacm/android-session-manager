@@ -43,4 +43,6 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences-core:1.1.1")
     //
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    //
+    implementation("com.google.crypto.tink:tink-android:1.7.0")
 }

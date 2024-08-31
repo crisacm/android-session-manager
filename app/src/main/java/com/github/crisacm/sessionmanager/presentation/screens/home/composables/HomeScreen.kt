@@ -55,6 +55,10 @@ fun Home(
                 HomeContracts.Effect.Navigation.ToLogin -> {
                     onNavigationRequested(HomeContracts.Effect.Navigation.ToLogin)
                 }
+
+                is HomeContracts.Effect.ShowToast -> {
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
             }
         }?.collect()
     }

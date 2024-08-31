@@ -8,9 +8,7 @@ object SplashContracts {
 
     sealed interface Event : ViewEvent
 
-    data class State(
-        val isSplashVisible: Boolean
-    ) : ViewState
+    class State : ViewState
 
     sealed interface Effect : ViewSideEffect {
         sealed interface Navigation : Effect {

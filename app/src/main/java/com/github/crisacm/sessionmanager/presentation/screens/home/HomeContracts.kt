@@ -13,6 +13,8 @@ object HomeContracts {
     class State : ViewState
 
     sealed interface Effect : ViewSideEffect {
+        data class ShowToast(val msg: String) : Effect
+
         sealed interface Navigation : Effect {
             data object ToLogin : Navigation
         }
