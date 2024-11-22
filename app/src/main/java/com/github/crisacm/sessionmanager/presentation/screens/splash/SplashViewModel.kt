@@ -8,27 +8,29 @@ import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 
 class SplashViewModel(
-    private val sessionManager: SessionManager
+  private val sessionManager: SessionManager
 ) : BaseViewModel<SplashContracts.Event, SplashContracts.State, SplashContracts.Effect>() {
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            sessionManager.getSessionInfo()
-                .lastOrNull()
-                .let {
-                    setEffect {
-                        if (it == null) {
-                            SplashContracts.Effect.Navigation.ToMain
-                        } else {
-                            SplashContracts.Effect.Navigation.ToLogin
-                        }
-
-                    }
-                }
+  init {
+    viewModelScope.launch(Dispatchers.IO) {
+      setEffect { SplashContracts.Effect.Navigation.ToLogin }
+      /* TODO: Fix this later
+      sessionManager.getSessionInfo()
+        .lastOrNull()
+        .let {
+          setEffect {
+            if (it == null) {
+              SplashContracts.Effect.Navigation.ToMain
+            } else {
+              SplashContracts.Effect.Navigation.ToLogin
+            }
+          }
         }
+      */
     }
+  }
 
-    override fun setInitialState(): SplashContracts.State = SplashContracts.State()
+  override fun setInitialState(): SplashContracts.State = SplashContracts.State()
 
-    override fun handleEvent(event: SplashContracts.Event) = Unit
+  override fun handleEvent(event: SplashContracts.Event) = Unit
 }
