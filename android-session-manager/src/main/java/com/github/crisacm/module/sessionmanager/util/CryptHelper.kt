@@ -1,4 +1,4 @@
-package com.github.crisacm.module.sessionmanager
+package com.github.crisacm.module.sessionmanager.util
 
 import android.content.Context
 import com.google.crypto.tink.Aead

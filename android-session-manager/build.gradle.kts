@@ -1,7 +1,10 @@
+import com.google.protobuf.gradle.id
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("plugin.serialization") version "2.0.0"
+    id("com.google.protobuf") version "0.9.3"
 }
 
 android {
@@ -38,11 +41,28 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    //
+
+    // DataStore: Preferences
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.datastore:datastore-preferences-core:1.1.1")
-    //
+
+    // DataStore: Proto
+    implementation("com.google.protobuf:protobuf-javalite:3.21.12")
+
+    // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-    //
+
+    // Tink
     implementation("com.google.crypto.tink:tink-android:1.7.0")
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:3.21.12" }
+    generateProtoTasks {
+        all().forEach {
+            it.builtins {
+                id("java") { option("lite") }
+            }
+        }
+    }
 }
