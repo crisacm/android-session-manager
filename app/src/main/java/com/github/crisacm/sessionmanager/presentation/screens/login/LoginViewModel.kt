@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.viewModelScope
-import com.github.crisacm.module.sessionmanager.SessionManager
+import com.github.crisacm.module.sessionmanager.core.SessionManager
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.github.crisacm.sessionmanager.presentation.screens.login.googleSign.GoogleAuthUiClient
 import com.github.crisacm.sessionmanager.util.FieldValidations
@@ -20,7 +20,7 @@ class LoginViewModel(
     private val auth: FirebaseAuth,
     private val sessionManager: SessionManager,
     private val context: Context,
-    private val appIoDispatcher: CoroutineDispatcher
+    private val appIoDispatcher: CoroutineDispatcher,
 ) : BaseViewModel<LoginContracts.Event, LoginContracts.State, LoginContracts.Effect>() {
 
     private val googleAuthUiClient by lazy { GoogleAuthUiClient(context, auth, Identity.getSignInClient(context)) }
@@ -67,7 +67,7 @@ class LoginViewModel(
                 .addOnCompleteListener {
                     viewModelScope.launch(appIoDispatcher) {
                         if (it.isSuccessful) {
-                            sessionManager.signIn(user, pass)
+                            // sessionManager.signIn(user, pass)
                             setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
                             setEffect { LoginContracts.Effect.Navigation.ToMain }
                         } else {
@@ -118,7 +118,7 @@ class LoginViewModel(
             val signInResult = googleAuthUiClient.signInWithIntent(data)
 
             if (signInResult.data != null) {
-                sessionManager.signIn(auth.currentUser?.displayName.toString(), "google")
+                // sessionManager.signIn(auth.currentUser?.displayName.toString(), "google")
                 setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
                 setEffect { LoginContracts.Effect.Navigation.ToMain }
             }

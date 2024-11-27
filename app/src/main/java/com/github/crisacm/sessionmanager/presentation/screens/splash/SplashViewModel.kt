@@ -1,10 +1,9 @@
 package com.github.crisacm.sessionmanager.presentation.screens.splash
 
 import androidx.lifecycle.viewModelScope
-import com.github.crisacm.module.sessionmanager.SessionManager
+import com.github.crisacm.module.sessionmanager.core.SessionManager
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 
 class SplashViewModel(

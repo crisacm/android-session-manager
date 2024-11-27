@@ -1,8 +1,7 @@
 package com.github.crisacm.sessionmanager.presentation.screens.register
 
 import androidx.lifecycle.viewModelScope
-import com.github.crisacm.module.sessionmanager.SessionManager
-import com.github.crisacm.sessionmanager.domain.model.User
+import com.github.crisacm.module.sessionmanager.core.SessionManager
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import com.github.crisacm.sessionmanager.util.FieldValidations
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -87,7 +86,7 @@ class RegisterViewModel(
                             )
                         }
                         setEffect { RegisterContracts.Effect.ShowSnack("User register successfully") }
-                        sessionManager.signIn(email, pass)
+                        // sessionManager.signIn(email, pass)
                         delay(500)
                         setEffect { RegisterContracts.Effect.Navigation.ToMain }
                     } else {

@@ -1,7 +1,7 @@
 package com.github.crisacm.sessionmanager.presentation.screens.home
 
 import androidx.lifecycle.viewModelScope
-import com.github.crisacm.module.sessionmanager.SessionManager
+import com.github.crisacm.module.sessionmanager.core.SessionManager
 import com.github.crisacm.sessionmanager.presentation.base.BaseViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +23,11 @@ class HomeViewModel(
 
     private fun logout() {
         viewModelScope.launch(ioDispatcher) {
+            /*
             sessionManager.signOut()
                 .onSuccess { setEffect { HomeContracts.Effect.Navigation.ToLogin } }
                 .onFailure { setEffect { HomeContracts.Effect.ShowToast("Error") } }
+            */
         }
     }
 }
