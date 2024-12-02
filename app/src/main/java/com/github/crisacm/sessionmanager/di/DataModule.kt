@@ -4,6 +4,8 @@ import com.github.crisacm.module.sessionmanager.SessionManagerProvider
 import com.github.crisacm.module.sessionmanager.auth.AuthenticationManager
 import com.github.crisacm.module.sessionmanager.core.SessionManager
 import com.github.crisacm.sessionmanager.auth.AuthenticationManagerImp
+import com.github.crisacm.sessionmanager.data.repo.AuthRepository
+import com.github.crisacm.sessionmanager.data.repo.AuthRepositoryImp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,4 +21,5 @@ val dataModule = module {
     singleOf(::appIoDispatcher)
     single<AuthenticationManager> { AuthenticationManagerImp() }
     single<SessionManager> { SessionManagerProvider.getInstance(get(), get()) }
+    single<AuthRepository> { AuthRepositoryImp(get(), get()) }
 }

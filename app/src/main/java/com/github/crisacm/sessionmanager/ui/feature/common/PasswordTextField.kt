@@ -27,7 +27,7 @@ fun PasswordTextField(
     textValue: String,
     placeHolder: String,
     isError: Boolean = false,
-    supportedText: String = "",
+    errorText: String = "",
     isEnable: Boolean = true,
     onTextChange: (text: String) -> Unit
 ) {
@@ -46,7 +46,7 @@ fun PasswordTextField(
                 if (isError) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = supportedText,
+                        text = errorText,
                         color = Color.Red
                     )
                 }
@@ -85,7 +85,7 @@ fun PasswordTextFieldPreview() {
         textValue = "",
         placeHolder = "password",
         isError = false,
-        supportedText = "",
+        errorText = "",
         isEnable = true,
         onTextChange = {}
     )
@@ -99,7 +99,7 @@ fun PasswordTextFieldErrorPreview() {
         textValue = "",
         placeHolder = "password",
         isError = true,
-        supportedText = "Wrong password",
+        errorText = "Wrong password",
         isEnable = true,
         onTextChange = {}
     )

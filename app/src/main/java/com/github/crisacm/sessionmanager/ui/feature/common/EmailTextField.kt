@@ -20,15 +20,15 @@ fun EmailTextField(
     textValue: String,
     placeHolder: String,
     isError: Boolean = false,
-    supportingText: String = "",
+    errorText: String = "",
     isEnabled: Boolean = true,
-    onEmailChange: (String) -> Unit
+    onTextChange: (String) -> Unit
 ) {
     Column(modifier = modifier) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = textValue,
-            onValueChange = { onEmailChange(it) },
+            onValueChange = { onTextChange(it) },
             placeholder = { Text(placeHolder) },
             enabled = isEnabled,
             isError = isError,
@@ -36,7 +36,7 @@ fun EmailTextField(
                 if (isError) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = supportingText,
+                        text = errorText,
                         color = Color.Red
                     )
                 }
@@ -65,7 +65,7 @@ fun EmailTextFieldPreview() {
         placeHolder = "user@mail.com",
         isError = false,
         isEnabled = true,
-        onEmailChange = {}
+        onTextChange = {}
     )
 }
 
@@ -78,8 +78,8 @@ fun EmailTextFieldErrorPreview() {
         placeHolder = "user@mail.com",
         isError = true,
         isEnabled = true,
-        supportingText = "Please enter valid email",
-        onEmailChange = { }
+        errorText = "Please enter valid email",
+        onTextChange = { }
     )
 }
 

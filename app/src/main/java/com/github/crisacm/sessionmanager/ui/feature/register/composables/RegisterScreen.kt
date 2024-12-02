@@ -128,8 +128,8 @@ fun Register(
                 placeHolder = "user@mail.com",
                 isError = (state.errorUserText != null && state.errorUserText.isError),
                 isEnabled = !state.isLoading,
-                supportingText = state.errorUserText?.errorMessage.toString(),
-                onEmailChange = { username = it }
+                errorText = state.errorUserText?.errorMessage.toString(),
+                onTextChange = { username = it }
             )
             PasswordTextField(
                 modifier = Modifier
@@ -138,7 +138,7 @@ fun Register(
                 textValue = password,
                 placeHolder = "password@123",
                 isError = (state.errorPassText != null && state.errorPassText.isError),
-                supportedText = state.errorPassText?.errorMessage.toString(),
+                errorText = state.errorPassText?.errorMessage.toString(),
                 isEnable = !state.isLoading,
                 onTextChange = { password = it }
             )
