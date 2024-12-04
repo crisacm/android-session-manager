@@ -39,6 +39,8 @@ class HomeViewModel(
     viewModelScope.launch(ioDispatcher) {
       setState { copy(buttonState = LoadingButtonState.LOADING) }
       delay(500)
+
+      sessionManager.clearSession()
       authRepository.signOut().collectLatest {
         if (it) {
           setState { copy(buttonState = LoadingButtonState.SUCCESS) }

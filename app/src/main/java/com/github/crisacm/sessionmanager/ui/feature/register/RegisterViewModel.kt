@@ -2,16 +2,21 @@ package com.github.crisacm.sessionmanager.ui.feature.register
 
 import androidx.lifecycle.viewModelScope
 import com.github.crisacm.module.sessionmanager.core.SessionManager
+import com.github.crisacm.module.sessionmanager.model.SessionInfo
 import com.github.crisacm.sessionmanager.data.repo.AuthRepository
 import com.github.crisacm.sessionmanager.ui.base.BaseViewModel
 import com.github.crisacm.sessionmanager.util.FieldValidations
+import com.github.crisacm.sessionmanager.util.crypto.CryptHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Instant
+import kotlin.time.Duration.Companion.hours
 
 class RegisterViewModel(
   private val sessionManager: SessionManager,
   private val authRepository: AuthRepository,
+  private val cryptHelper: CryptHelper,
 ) : BaseViewModel<RegisterContracts.Event, RegisterContracts.State, RegisterContracts.Effect>() {
 
   private val ioDispatcher = Dispatchers.IO
@@ -62,9 +67,23 @@ class RegisterViewModel(
       authRepository.register(name, email, pass).collect { result ->
         result
           .onSuccess { user ->
-            setState { RegisterContracts.State(isSuccess = true) }
-            delay(500)
-            setEffect { RegisterContracts.Effect.Navigation.ToMain }
+            if (user != null) {
+              sessionManager.registerSession(
+                SessionInfo(
+                  user = user.email!!,
+                  pass = cryptHelper.encrypt(pass).toString(),
+                  token = user.uid,
+                  expiration = Instant.now().plusSeconds(24.hours.inWholeSeconds)
+                )
+              )
+
+              setState { RegisterContracts.State(isSuccess = true) }
+              delay(500)
+              setEffect { RegisterContracts.Effect.Navigation.ToMain }
+            } else {
+              setState { RegisterContracts.State() }
+              setEffect { RegisterContracts.Effect.ShowSnack("Error registering user") }
+            }
           }
           .onFailure { t ->
             setState { RegisterContracts.State() }

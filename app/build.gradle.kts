@@ -138,4 +138,7 @@ dependencies {
 
     // Google credentials
     implementation("com.google.android.gms:play-services-auth:21.1.1")
+
+    // Tink
+    implementation("com.google.crypto.tink:tink-android:1.7.0")
 }

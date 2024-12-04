@@ -1,13 +1,11 @@
 
 # Android Session Manager
 
-This small project is to provide a quick and easy way to manage sessions within Android applications, this using DataStore storage together with Proto Database.
-
+I created this small module with the purpose of managing, in a simple but secure way, the sessions in Android applications, allowing the integration of external authentication systems, adding more flexibility to the module.
 
 ## Installation
 
-Installation
-Add below codes to your root build.gradle file (not your module build.gradle file).
+Add below codes to your root (project) build.gradle file:
 
 ```groovy
 allprojects {
@@ -17,7 +15,7 @@ allprojects {
 }
 ```
 
-Then add the dependency to the builde.gralde of your module
+Then add the dependency to the builde.gralde of your module:
 
 ```groovy
 dependencies {
@@ -27,62 +25,69 @@ dependencies {
 
 ## How to Use
 
-The implementation must be carried out through the `SessionManagerInstance` instance, which allows access to the necessary functions for session management.
+### Get SessionManager instance
 
-* ### `signIn`
-
-The `signIn` function is used to register a session, closing the previous one (the record of the previous session is deleted), this function receives 3 parameters:
-
-- `user`: User name with which the session is registered.
-- `pass`: Password of the session, which can be replaced by a token.
-- `args`: An argument map in case more session information needs to be stored.
+To obtain the instance of `SessionManager`, use the `getInstance` method of `SessionManagerProvider`, where we must pass by parameter the implementation of AuthenticationManager together with the context of the application:
 
 ```kotlin
-SessionManagerInstance.signIn(
-  user = "Cris",
-  pass = "123",
-  args = mapOf("key" to "value")
-)
+val sessionManager = SessionManagerProvider.getInstance(authenticationManager, context)
 ```
 
-* ### `logout`
+* #### Registering a session
 
-With this function we will close the last active session, this function returns the session that is being closed and in case there is no active session a null value will be returned.
+To register a new session, use the `registerSession` method:
 
 ```kotlin
-SessionManagerInstance.logout()
+suspend fun registerSession(sessionInfo: SessionInfo)
 ```
 
-* ### `getSignInDate`
+* #### Clearing the session
 
-Returns the date under the pattern "dd/MM/yyyy" of the active session, in case there is no session the value returned is null.
+To clear the current session, use the `clearSession` method:
 
 ```kotlin
-SessionManagerInstance.getSignInDate().collect()
+suspend fun clearSession()
 ```
 
-* ### `getSignIn`
+* #### Get session information
 
-This function returns, in case there is a session, a `SessionInfo` type object which contains all the parameters of the session, in order to have a more precise control of the information in case it is required all together.
+To get the current session information, use the `getSessionInfo` method:
 
 ```kotlin
-data class SessionInfo(
-  var user: String,
-  var password: String,
-  var args: Map<String, String>,
-  var signInDate: String, // Pattern DD/MM/YYYY
-  var isLogged: Boolean
-)
-
-SessionManagerInstance.getSignIn().collect()
+fun getSessionInfo(): Flow<SessionInfo?>
 ```
 
-* ### `isSignIn`
+* #### Check if the session is active
 
-Retorna el valor `true` en caso de la sesión se encuentre activa y `false` en caso contrario.
+To check if the session is active, use the `isSessionActive` method:
 
 ```kotlin
-SessionManagerInstance.isSignIn().collect()
+fun isSessionActive(): Flow<Boolean>
+```
+
+* #### Configuring options
+
+To configure options in the `SessionManager`, use the `configure` method:
+
+```kotlin
+fun configure(options: Map<String, Any>)
+```
+
+
+* #### Get an option
+
+To get a specific option, use the `getOption` method:
+
+```kotlin
+fun getOption(key: String): Any?
+```
+
+* #### Validate the session
+
+To validate the session, use the `validateSession` method:
+
+```kotlin
+suspend fun validateSession(key: ValidateSessionKeys, value: String): SessionValidationResult
 ```
 
 ## Demo App
@@ -90,51 +95,41 @@ SessionManagerInstance.isSignIn().collect()
 This application demonstrates in a very basic way how the module works by performing a login through the Firebase Authentication tool in order to demonstrate in a flexible way how to use the library in a basic scenario.
 
 <p>
-  <img src="misc/image/screen_1.png" width="250" />
-  <img src="misc/image/screen_2.png" width="250" />
-  <img src="misc/image/screen_3.png" width="250" />
+  <img src="misc/image/screen-1.png" width="250" />
+  <img src="misc/image/screen-2.png" width="250" />
+  <img src="misc/image/screen-3.png" width="250" />
 </p>
-
 
 ## Tech Stak - Demo App
 
 This application implements many of the most popular libraries in the Android ecosystem.
 
-* Tech-stack
-    * [100% Kotlin](https://kotlinlang.org/)
-        + [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - perform background operations
-        + [Kotlin Flow](https://kotlinlang.org/docs/flow.html) - data flow across all app layers, including views
-        + [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) - parse [JSON](https://www.json.org/json-en.html)
-    * [Jetpack](https://developer.android.com/jetpack)
-        * [Compose](https://developer.android.com/jetpack/compose) - modern, native UI kit
-        * [Navigation](https://developer.android.com/topic/libraries/architecture/navigation/) - in-app navigation
-        * [Splash Screen Core]()
-        * [Lifecycle](https://developer.android.com/topic/libraries/architecture/lifecycle) - perform an action when
-          lifecycle state changes
-        * [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - store and manage UI-related
-          data in a lifecycle-aware way
-    * [Firebase](https://firebase.google.com/?hl=es-419)
-        * [Authentication](https://firebase.google.com/docs/auth?hl=es-419)
-        * [Crahslitycs](https://firebase.google.com/docs/crashlytics?hl=es-419)
-    * [Koin](https://insert-koin.io/) - dependency injection (dependency retrieval)
-    * [Coil](https://github.com/coil-kt/coil) - image loading library
-    * [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-    * MVVM + MVI (presentation layer)
-    * [Android Architecture components](https://developer.android.com/topic/libraries/architecture)
-      ([ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)
-      , [Kotlin Flow](https://kotlinlang.org/docs/flow.html)
-      , [Navigation](https://developer.android.com/jetpack/androidx/releases/navigation))
-    * [Android KTX](https://developer.android.com/kotlin/ktx) - Jetpack Kotlin extensions
-* UI
+* **100% Kotlin**
+  * [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - perform background operations
+  * [Kotlin Flow](https://kotlinlang.org/docs/flow.html) - data flow across all app layers, including views
+  * [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) - parse [JSON](https://www.json.org/json-en.html)
+  * [Lifecycle](https://developer.android.com/topic/libraries/architecture/lifecycle) - perform an action when lifecycle state changes
+  * [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - store and manage UI-related data in a lifecycle-aware way
+* **Jetpack**
+  * [Navigation](https://developer.android.com/topic/libraries/architecture/navigation/) - in-app navigation
+  * [Splash Screen API](https://developer.android.com/develop/ui/views/launch/splash-screen?hl=es-419)
+* **Firebase**
+    * [Authentication](https://firebase.google.com/docs/auth?hl=es-419)
+    * [Crahslitycs](https://firebase.google.com/docs/crashlytics?hl=es-419)
+* [Koin](https://insert-koin.io/) - dependency injection (dependency retrieval)
+* [Coil](https://github.com/coil-kt/coil) - image loading library
+* [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+  * MVI Architecture
+  * [Android Architecture components](https://developer.android.com/topic/libraries/architecture)
+* **UI**
     * [Jetpack Compose](https://developer.android.com/jetpack/compose) - modern, native UI kit (used for Fragments)
     * [Material Design 3](https://m3.material.io/) - application design system providing UI components
     * Theme selection
         * [Dark Theme](https://material.io/develop/android/theming/dark) - dark theme for the app (Android 10+)
-        * [Dynamic Theming](https://m3.material.io/styles/color/dynamic-color/overview) - use generated, wallpaper-based
-          theme (Android 12+)
-* Gradle
-    * [Gradle Kotlin DSL](https://docs.gradle.org/current/userguide/kotlin_dsl.html) - define build scripts
-    * [Versions catalog](https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog) - define dependencies
+        * [Dynamic Theming](https://m3.material.io/styles/color/dynamic-color/overview) - use generated, wallpaper-based theme (Android 12+)
+* **Gradle**
+    * [Gradle Kotlin DSL](https://docs.gradle.org/current/userguide/kotlin_dsl.html)
+    * [Versions catalog](https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog)
     * [Type safe accessors](https://docs.gradle.org/7.0/release-notes.html)
 
 ## Contribution

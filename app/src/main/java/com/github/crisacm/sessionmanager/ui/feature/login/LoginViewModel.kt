@@ -3,18 +3,23 @@ package com.github.crisacm.sessionmanager.ui.feature.login
 import android.content.Intent
 import androidx.lifecycle.viewModelScope
 import com.github.crisacm.module.sessionmanager.core.SessionManager
+import com.github.crisacm.module.sessionmanager.model.SessionInfo
 import com.github.crisacm.sessionmanager.data.repo.AuthRepository
 import com.github.crisacm.sessionmanager.ui.base.BaseViewModel
 import com.github.crisacm.sessionmanager.util.FieldValidations
+import com.github.crisacm.sessionmanager.util.crypto.CryptHelper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.Instant
+import kotlin.time.Duration.Companion.hours
 
 class LoginViewModel(
   private val sessionManager: SessionManager,
   private val appIoDispatcher: CoroutineDispatcher,
   private val authRepository: AuthRepository,
+  private val cryptHelper: CryptHelper,
 ) : BaseViewModel<LoginContracts.Event, LoginContracts.State, LoginContracts.Effect>() {
 
   override fun setInitialState(): LoginContracts.State =
@@ -64,7 +69,15 @@ class LoginViewModel(
         result
           .onSuccess {
             if (it != null) {
-              // sessionManager.signIn(user, pass)
+              sessionManager.registerSession(
+                SessionInfo(
+                  user = it.email!!,
+                  pass = cryptHelper.encrypt(pass).toString(),
+                  token = it.uid,
+                  expiration = Instant.now().plusSeconds(24.hours.inWholeSeconds)
+                )
+              )
+
               setState { LoginContracts.State(isSuccess = true) }
               delay(500)
               setEffect { LoginContracts.Effect.Navigation.ToMain }
@@ -97,6 +110,7 @@ class LoginViewModel(
     }
   }
 
+  @Suppress("MagicNumber")
   private fun handleSignInResult(data: Intent?) {
     viewModelScope.launch(appIoDispatcher) {
       if (data == null) {
@@ -107,8 +121,16 @@ class LoginViewModel(
 
       authRepository.handleGoogleSignInResult(data).collectLatest {
         if (it != null) {
-          // sessionManager.signIn(it.displayName.toString(), "google")
-          setEffect { LoginContracts.Effect.ShowSnack("SignIn Successful") }
+          sessionManager.registerSession(
+            SessionInfo(
+              user = it.email!!,
+              token = it.uid,
+              expiration = Instant.now().plusSeconds(24.hours.inWholeSeconds)
+            )
+          )
+
+          setState { LoginContracts.State(isSuccess = true) }
+          delay(500)
           setEffect { LoginContracts.Effect.Navigation.ToMain }
         } else {
           setState { copy(isLoading = false) }
