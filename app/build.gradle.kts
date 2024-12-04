@@ -9,17 +9,17 @@ plugins {
 }
 
 android {
-    namespace = AppConfig.applicationId
-    compileSdk = AppConfig.compileSdk
+    namespace = "com.github.crisacm.sessionmanager"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = AppConfig.applicationId
-        minSdk = AppConfig.minSdk
-        targetSdk = AppConfig.targetSdk
-        versionCode = AppConfig.versionCode
-        versionName = AppConfig.versionName
+        applicationId = "com.github.crisacm.sessionmanager"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0.0"
 
-        testInstrumentationRunner = AppConfig.androidTestInstrumentation
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -29,15 +29,15 @@ android {
         properties.load(File("firebase.properties").inputStream())
         properties.map { it.key.toString() to it.value.toString() }.toMap()
     }.value
-    flavorDimensions += AppConfig.flavorDimension
+    flavorDimensions += "environment"
     productFlavors {
-        create(AppConfig.flavorDev) {
-            dimension = AppConfig.flavorDimension
+        create("dev") {
+            dimension = "environment"
             versionNameSuffix = "-dev"
             buildConfigField("String", "FIREBASE_KEY", "\"${firebaseProperties["firebase.auth"] as String}\"")
         }
-        create(AppConfig.flaverProduction) {
-            dimension = AppConfig.flavorDimension
+        create("production") {
+            dimension = "environment"
             versionNameSuffix = "-prod"
             buildConfigField("String", "FIREBASE_KEY", "\"${firebaseProperties["firebase.auth"] as String}\"")
         }
@@ -49,11 +49,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = AppConfig.javaCompatibility
-        targetCompatibility = AppConfig.javaCompatibility
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = AppConfig.javaJvmTarget
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     buildFeatures {
         compose = true

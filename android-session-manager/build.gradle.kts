@@ -10,10 +10,10 @@ plugins {
 
 android {
     namespace = "com.github.crisacm.module.sessionmanager"
-    compileSdk = AppConfig.compileSdk
+    compileSdk = 34
 
     defaultConfig {
-        minSdk = AppConfig.minSdk
+        minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -30,7 +30,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }
 
@@ -39,7 +39,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.crisacm"
             artifactId = "android-session-manager"
-            version = "0.0.3"
+            version = "0.0.4"
 
             afterEvaluate {
                 from(components["release"])
