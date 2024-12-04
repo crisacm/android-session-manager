@@ -12,10 +12,11 @@ class SessionDataStore(private val dataStore: DataStore<SessionInfoProto>) {
     try {
       dataStore.updateData { currentSessionInfo ->
         currentSessionInfo.toBuilder()
-          .setUserId(sessionInfo.userId)
+          .setUser(sessionInfo.user)
+          .setPassword(sessionInfo.password)
           .setToken(sessionInfo.token)
           .setExpiration(sessionInfo.expiration)
-          .putAllMetadata(sessionInfo.metadata)
+          .putAllMetadata(sessionInfo.metadata ?: mapOf())
           .build()
       }
     } catch (e: IOException) {
@@ -24,7 +25,7 @@ class SessionDataStore(private val dataStore: DataStore<SessionInfoProto>) {
   }
 
   fun getSessionInfo(): Flow<SessionInfoProto?> {
-    return dataStore.data.map { if (it.userId.isEmpty()) null else it }
+    return dataStore.data.map { if (it.user.isEmpty()) null else it }
   }
 
   suspend fun clearSession() {

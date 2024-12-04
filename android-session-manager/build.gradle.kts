@@ -1,8 +1,10 @@
 import com.google.protobuf.gradle.id
+import org.gradle.kotlin.dsl.from
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("maven-publish")
     kotlin("plugin.serialization") version "2.0.0"
     id("com.google.protobuf") version "0.9.3"
 }
@@ -33,6 +35,20 @@ android {
     }
 }
 
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.crisacm"
+            artifactId = "android-session-,anager"
+            version = "0.0.1"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -51,9 +67,6 @@ dependencies {
 
     // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-
-    // Tink
-    implementation("com.google.crypto.tink:tink-android:1.7.0")
 }
 
 protobuf {

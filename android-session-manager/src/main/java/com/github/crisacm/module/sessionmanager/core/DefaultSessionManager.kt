@@ -1,6 +1,5 @@
 package com.github.crisacm.module.sessionmanager.core
 
-import com.github.crisacm.module.sessionmanager.auth.AuthenticationManager
 import com.github.crisacm.module.sessionmanager.datastore.SessionDataStore
 import com.github.crisacm.module.sessionmanager.model.SessionInfo
 import com.github.crisacm.module.sessionmanager.model.SessionValidationResult
@@ -8,28 +7,46 @@ import com.github.crisacm.module.sessionmanager.model.toDomain
 import com.github.crisacm.module.sessionmanager.model.toProto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.time.delay
-import java.time.Duration
 import java.time.Instant
 
 @Suppress("TooManyFunctions")
-class DefaultSessionManager(
-  private val authenticationManager: AuthenticationManager,
+internal class DefaultSessionManager(
   private val sessionDataStore: SessionDataStore,
 ) : SessionManager {
+  private val _sessionExpired = MutableStateFlow(false)
+  override val sessionExpired: StateFlow<Boolean> get() = _sessionExpired
+
+  init {
+    sessionDataStore.getSessionInfo().map { sessionInfoProto -> sessionInfoProto?.toDomain() }.map { sessionInfo ->
+      sessionInfo?.expiration?.isBefore(Instant.now()) == true
+    }.distinctUntilChanged() // Only change when session state changes
+      .onEach { isExpired ->
+        if (isExpired) {
+          _sessionExpired.value = true
+          clearSession()
+        } else {
+          _sessionExpired.value = false
+        }
+      }.launchIn(CoroutineScope(Dispatchers.IO))
+  }
+
   private val options: MutableMap<String, Any> = mutableMapOf()
 
+
+  /**
+   * Registers a new session by saving the provided session information.
+   * **Note**: It is recommended to hash the password before storing it.
+   *
+   * @param sessionInfo The session information to be saved.
+   */
   override suspend fun registerSession(sessionInfo: SessionInfo) {
     sessionDataStore.saveSessionInfo(sessionInfo.toProto())
   }
@@ -59,29 +76,27 @@ class DefaultSessionManager(
     return options[key]
   }
 
-  override suspend fun validateSession(key: String, value: String): SessionValidationResult {
+  override suspend fun validateSession(key: ValidateSessionKeys, value: String): SessionValidationResult {
     val sessionInfo = sessionDataStore.getSessionInfo().firstOrNull()?.toDomain()
 
     return when (key) {
-      "user" -> {
-        if (sessionInfo?.userId == value) {
+      ValidateSessionKeys.USER -> {
+        if (sessionInfo?.user == value) {
           SessionValidationResult.Success
         } else {
           SessionValidationResult.Failure("Invalid user ID")
         }
       }
 
-      "password" -> {
-        // Supongamos que tienes un mecanismo para validar contraseñas
-        val isValidPassword = validatePassword(sessionInfo, value)
-        if (isValidPassword) {
+      ValidateSessionKeys.PASSWORD -> {
+        if (sessionInfo?.pass == value) {
           SessionValidationResult.Success
         } else {
           SessionValidationResult.Failure("Invalid password")
         }
       }
 
-      "token" -> {
+      ValidateSessionKeys.TOKEN -> {
         if (sessionInfo?.token == value) {
           SessionValidationResult.Success
         } else {
@@ -91,52 +106,5 @@ class DefaultSessionManager(
 
       else -> SessionValidationResult.Failure("Invalid key for validation")
     }
-  }
-
-  private fun validatePassword(sessionInfo: SessionInfo?, password: String): Boolean {
-    // Lógica para validar la contraseña; puede ser comparativa o hashing.
-    return sessionInfo?.metadata?.get("passwordHash") == hashPassword(password)
-  }
-
-  private fun hashPassword(password: String): String {
-    // Implementa tu función de hashing.
-    return password.reversed() // Ejemplo simple, NO usar en producción
-  }
-
-  private val _sessionExpired = MutableStateFlow(false)
-  override val sessionExpired: StateFlow<Boolean> get() = _sessionExpired
-
-  override fun monitorSessionExpiration() {
-    sessionDataStore.getSessionInfo().map { sessionInfoProto -> sessionInfoProto?.toDomain() }.map { sessionInfo ->
-      sessionInfo?.expiration?.isBefore(Instant.now()) == true
-    }.distinctUntilChanged() // Solo emite cambios si el estado de sesión cambia
-      .onEach { isExpired ->
-        if (isExpired) {
-          _sessionExpired.value = true
-          clearSession()
-        } else {
-          _sessionExpired.value = false
-        }
-      }.launchIn(CoroutineScope(Dispatchers.IO))
-  }
-
-  @OptIn(ExperimentalCoroutinesApi::class)
-  override fun monitorSessionExpirationWithTimer(duration: Duration) {
-    flow {
-      while (true) {
-        emit(Unit)
-        delay(duration)
-      }
-    }.flatMapLatest { sessionDataStore.getSessionInfo() }.map { sessionInfoProto -> sessionInfoProto?.toDomain() }
-      .map { sessionInfo ->
-        sessionInfo?.expiration?.isBefore(Instant.now()) == true
-      }.distinctUntilChanged().onEach { isExpired ->
-        if (isExpired) {
-          _sessionExpired.value = true
-          clearSession()
-        } else {
-          _sessionExpired.value = false
-        }
-      }.launchIn(CoroutineScope(Dispatchers.IO))
   }
 }

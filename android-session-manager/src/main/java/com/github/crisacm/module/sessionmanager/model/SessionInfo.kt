@@ -4,26 +4,29 @@ import com.github.crisacm.module.sessionmanager.proto.SessionInfoProto
 import java.time.Instant
 
 data class SessionInfo(
-  val userId: String = "",
+  val user: String = "",
+  val pass: String = "",
   val token: String = "",
-  val expiration: Instant = Instant.now(),
+  val expiration: Instant? = null,
   val metadata: Map<String, String>? = null
 )
 
 fun SessionInfoProto.toDomain(): SessionInfo {
   return SessionInfo(
-    userId = this.userId,
+    user = this.user,
+    pass = this.password,
     token = this.token,
-    expiration = Instant.ofEpochSecond(this.expiration),
-    metadata = this.metadataMap
+    expiration = if (this.expiration > 0) Instant.ofEpochSecond(this.expiration) else null,
+    metadata = if (this.metadataMap.isNotEmpty()) this.metadataMap else null
   )
 }
 
 internal fun SessionInfo.toProto(): SessionInfoProto {
   return SessionInfoProto.newBuilder()
-    .setUserId(this.userId)
+    .setUser(this.user)
+    .setPassword(this.pass)
     .setToken(this.token)
-    .setExpiration(this.expiration.epochSecond)
-    .putAllMetadata(this.metadata)
+    .setExpiration(this.expiration?.epochSecond ?: 0)
+    .putAllMetadata(this.metadata ?: emptyMap<String, String>())
     .build()
 }

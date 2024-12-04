@@ -4,8 +4,9 @@ option java_package = "com.github.crisacm.module.sessionmanager.proto";
 option java_multiple_files = true;
 
 message SessionInfoProto {
-    string userId = 1;
-    string token = 2;
-    int64 expiration = 3;
-    map<string, string> metadata = 4;
+    string user = 1;
+    string password = 2;
+    string token = 3;
+    int64 expiration = 4;
+    map<string, string> metadata = 5;
 }
