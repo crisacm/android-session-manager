@@ -20,4 +20,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "SessionManager"
-include(":app", ":android-session-manager")
+if (System.getenv("CI") == "true") {
+    include(":android-session-manager")
+} else {
+    include(":app", ":android-session-manager")
+}
