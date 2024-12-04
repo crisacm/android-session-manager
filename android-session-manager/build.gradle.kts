@@ -1,12 +1,11 @@
 import com.google.protobuf.gradle.id
-import org.gradle.kotlin.dsl.from
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("maven-publish")
     kotlin("plugin.serialization") version "2.0.0"
     id("com.google.protobuf") version "0.9.3"
+    id("maven-publish")
 }
 
 android {
@@ -40,13 +39,17 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.crisacm"
             artifactId = "android-session-manager"
-            version = "0.0.2"
+            version = "0.0.3"
 
             afterEvaluate {
                 from(components["release"])
             }
         }
     }
+}
+
+tasks.withType<AbstractPublishToMaven> {
+    dependsOn("assembleRelease")
 }
 
 dependencies {
