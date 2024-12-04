@@ -11,4 +11,8 @@ object AppConfig {
 
     val javaJvmTarget = JavaVersion.VERSION_1_8.toString()
     val javaCompatibility = JavaVersion.VERSION_1_8
+
+    const val flavorDimension = "environment"
+    const val flavorDev = "dev"
+    const val flaverProduction = "production"
 }

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -22,7 +24,24 @@ android {
             useSupportLibrary = true
         }
     }
-
+    val firebaseProperties: Map<String, String> = lazy {
+        val properties = Properties()
+        properties.load(File("firebase.properties").inputStream())
+        properties.map { it.key.toString() to it.value.toString() }.toMap()
+    }.value
+    flavorDimensions += AppConfig.flavorDimension
+    productFlavors {
+        create(AppConfig.flavorDev) {
+            dimension = AppConfig.flavorDimension
+            versionNameSuffix = "-dev"
+            buildConfigField("String", "FIREBASE_KEY", "\"${firebaseProperties["firebase.auth"] as String}\"")
+        }
+        create(AppConfig.flaverProduction) {
+            dimension = AppConfig.flavorDimension
+            versionNameSuffix = "-prod"
+            buildConfigField("String", "FIREBASE_KEY", "\"${firebaseProperties["firebase.auth"] as String}\"")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -38,6 +57,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

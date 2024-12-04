@@ -3,7 +3,7 @@ package com.github.crisacm.sessionmanager.data.repo
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.IntentSenderRequest
-import com.github.crisacm.sessionmanager.R
+import com.github.crisacm.sessionmanager.BuildConfig
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -27,7 +27,7 @@ class AuthRepositoryImp(
     .setGoogleIdTokenRequestOptions(
       BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
         .setSupported(true)
-        .setServerClientId(context.getString(R.string.firebase_auth_server_key))
+        .setServerClientId(BuildConfig.FIREBASE_KEY)
         .setFilterByAuthorizedAccounts(false)
         .build()
     )
