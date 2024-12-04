@@ -8,8 +8,10 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.userProfileChangeRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -32,7 +34,8 @@ class AuthRepositoryImp(
     .setAutoSelectEnabled(true)
     .build()
 
-  override fun getGoogleSignInIntent(): Flow<IntentSenderRequest?> = flow {
+  @Suppress("TooGenericExceptionThrown", "TooGenericExceptionCaught", "SwallowedException")
+  override fun getGoogleSignInIntent(): Flow<IntentSenderRequest?> = flow<IntentSenderRequest?> {
     try {
       val intent = oneTapClient.beginSignIn(signInRequest).await()
       emit(
@@ -41,11 +44,14 @@ class AuthRepositoryImp(
           .build()
       )
     } catch (e: Exception) {
-      e.printStackTrace()
-      emit(null)
+      throw Exception("Error al obtener el intent de inicio de sesión con Google: ${e.message}")
     }
-  }.catch { emit(null) }
+  }.catch {
+    it.printStackTrace()
+    emit(null)
+  }
 
+  @Suppress("TooGenericExceptionThrown", "TooGenericExceptionCaught", "SwallowedException")
   override fun handleGoogleSignInResult(intent: Intent): Flow<FirebaseUser?> = flow {
     try {
       val credential = GoogleAuthProvider.getCredential(
@@ -55,25 +61,61 @@ class AuthRepositoryImp(
       val result = firebaseAuth.signInWithCredential(credential).await()
       emit(result.user)
     } catch (e: Exception) {
-      e.printStackTrace()
-      emit(null)
+      throw Exception("Error al iniciar sesión con Google: ${e.message}")
     }
-  }.catch { emit(null) }
+  }.catch {
+    it.printStackTrace()
+    emit(null)
+  }
 
   override fun isUserAuthenticated(): Flow<Boolean> = flow {
     emit(firebaseAuth.currentUser != null)
   }
 
+  override fun getCurrentUser(): Flow<FirebaseUser?> = flow {
+    emit(firebaseAuth.currentUser)
+  }
+
   override fun signInWithEmailAndPassword(
     email: String,
     password: String
-  ): Flow<FirebaseUser?> = flow {
+  ): Flow<Result<FirebaseUser?>> = flow {
     val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-    emit(result.user)
+    emit(Result.success(result.user))
+  }.catch {
+    it.printStackTrace()
+    emit(Result.failure(it))
   }
 
   override fun signOut(): Flow<Boolean> = flow {
     firebaseAuth.signOut()
     emit(true)
+  }
+
+  @Suppress("TooGenericExceptionThrown", "TooGenericExceptionCaught", "SwallowedException")
+  override fun register(
+    name: String,
+    email: String,
+    password: String
+  ): Flow<Result<FirebaseUser?>> = flow {
+    try {
+      val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+
+      result.user?.updateProfile(
+        userProfileChangeRequest {
+          displayName = name
+        }
+      )?.await()
+
+      emit(Result.success(result.user))
+    } catch (e: FirebaseAuthUserCollisionException) {
+      e.printStackTrace()
+      throw Exception("El correo electrónico ya está registrado")
+    } catch (e: Exception) {
+      throw Exception("Error al registrar el usuario: ${e.message}")
+    }
+  }.catch {
+    it.printStackTrace()
+    emit(Result.failure(it))
   }
 }
