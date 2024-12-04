@@ -39,8 +39,8 @@ publishing {
     publications {
         register<MavenPublication>("release") {
             groupId = "com.github.crisacm"
-            artifactId = "android-session-,anager"
-            version = "0.0.1"
+            artifactId = "android-session-manager"
+            version = "0.0.2"
 
             afterEvaluate {
                 from(components["release"])
