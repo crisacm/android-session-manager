@@ -24,22 +24,29 @@ android {
             useSupportLibrary = true
         }
     }
-    val firebaseProperties: Map<String, String> = lazy {
-        val properties = Properties()
-        properties.load(File("firebase.properties").inputStream())
-        properties.map { it.key.toString() to it.value.toString() }.toMap()
-    }.value
+    val firebasePropertiesFile = rootProject.file("firebase.properties")
+    var authKey = ""
+    if (firebasePropertiesFile.exists()) {
+        val firebaseProperties: Map<String, String> = lazy {
+            val properties = Properties()
+            properties.load(firebasePropertiesFile.inputStream())
+            properties.map { it.key.toString() to it.value.toString() }.toMap()
+        }.value
+        authKey = firebaseProperties["firebase.auth"] as String
+    } else {
+        println("⚠️ firebase.properties no encontrado, usando valores por defecto.")
+    }
     flavorDimensions += "environment"
     productFlavors {
         create("dev") {
             dimension = "environment"
             versionNameSuffix = "-dev"
-            buildConfigField("String", "FIREBASE_KEY", "\"${firebaseProperties["firebase.auth"] as String}\"")
+            buildConfigField("String", "FIREBASE_KEY", "\"${authKey}\"")
         }
         create("production") {
             dimension = "environment"
             versionNameSuffix = "-prod"
-            buildConfigField("String", "FIREBASE_KEY", "\"${firebaseProperties["firebase.auth"] as String}\"")
+            buildConfigField("String", "FIREBASE_KEY", "\"${authKey}\"")
         }
     }
     buildTypes {
