@@ -11,3 +11,6 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val TextLinkColor = Color(214, 234, 248)
+
+val greenSuccess = Color(69, 179, 157)
+val greenSuccessLight = Color(232, 246, 243)

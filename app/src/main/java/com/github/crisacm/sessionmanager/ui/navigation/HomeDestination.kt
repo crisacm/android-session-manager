@@ -7,19 +7,21 @@ import com.github.crisacm.sessionmanager.ui.feature.home.HomeViewModel
 import com.github.crisacm.sessionmanager.ui.feature.home.composables.Home
 import org.koin.androidx.compose.getViewModel
 
+@Suppress("FunctionNaming")
 @Composable
 fun HomeScreenDestination(navController: NavController) {
-    val viewModel = getViewModel<HomeViewModel>()
-    Home(
-        effectFlow = viewModel.effect,
-        onEventSent = viewModel::setEvent,
-        onNavigationRequested = { navigationEffect ->
-            when (navigationEffect) {
-                HomeContracts.Effect.Navigation.ToLogin -> {
-                    navController.popBackStack()
-                    navController.navigate(Login)
-                }
-            }
+  val viewModel = getViewModel<HomeViewModel>()
+  Home(
+    state = viewModel.viewState.value,
+    effectFlow = viewModel.effect,
+    onEventSent = viewModel::setEvent,
+    onNavigationRequested = { navigationEffect ->
+      when (navigationEffect) {
+        HomeContracts.Effect.Navigation.ToLogin -> {
+          navController.popBackStack()
+          navController.navigate(Login)
         }
-    )
+      }
+    }
+  )
 }

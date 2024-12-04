@@ -1,6 +1,7 @@
 package com.github.crisacm.sessionmanager.ui.feature.login.composables
 
 import android.app.Activity.RESULT_OK
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import com.github.crisacm.sessionmanager.R
 import com.github.crisacm.sessionmanager.ui.base.SIDE_EFFECTS_KEY
 import com.github.crisacm.sessionmanager.ui.feature.common.EmailTextField
 import com.github.crisacm.sessionmanager.ui.feature.common.LoadingButton
+import com.github.crisacm.sessionmanager.ui.feature.common.LoadingButtonState
 import com.github.crisacm.sessionmanager.ui.feature.common.PasswordTextField
 import com.github.crisacm.sessionmanager.ui.feature.login.LoginContracts
 import com.github.crisacm.sessionmanager.ui.theme.SessionManagerTheme
@@ -53,7 +55,6 @@ fun LoginScreen(
 ) {
   val snackBarHostState = remember { SnackbarHostState() }
 
-  // This parameters are used only for testing purpose
   var username by remember { mutableStateOf("") }
   var password by remember { mutableStateOf("") }
 
@@ -127,7 +128,7 @@ fun LoginScreen(
         textValue = username,
         placeHolder = "user@mail.com",
         isError = (state.errorUserText != null && state.errorUserText.isError),
-        isEnabled = !state.isLoading,
+        isEnabled = (!state.isLoading && !state.isSuccess),
         errorText = state.errorUserText?.errorMessage.toString(),
         onTextChange = { username = it }
       )
@@ -148,12 +149,17 @@ fun LoginScreen(
         placeHolder = "password@123",
         isError = (state.errorPassText != null && state.errorPassText.isError),
         errorText = state.errorPassText?.errorMessage.toString(),
-        isEnable = !state.isLoading,
+        isEnable = (!state.isLoading && !state.isSuccess),
         onTextChange = { password = it }
       )
       LoadingButton(
         modifier = Modifier.padding(start = 24.dp, top = 36.dp, end = 24.dp),
-        loading = state.isLoading
+        state = when {
+          state.isLoading && !state.isSuccess -> LoadingButtonState.LOADING
+          !state.isLoading && state.isSuccess -> LoadingButtonState.SUCCESS
+          else -> LoadingButtonState.IDLE
+        },
+        idleText = "Sign In",
       ) { onEventSent(LoginContracts.Event.SingIn(username, password)) }
       Row(
         modifier = Modifier.padding(top = 36.dp, end = 0.dp, bottom = 36.dp),
@@ -179,14 +185,20 @@ fun LoginScreen(
         CircleButton(
           isEnable = !state.isLoading,
           painter = painterResource(R.drawable.google),
-          onClick = { onEventSent(LoginContracts.Event.SingInWGoogle) }
+          onClick = {
+            if (!state.isLoading && !state.isSuccess) onEventSent(LoginContracts.Event.SingInWGoogle)
+          }
         )
+        /*
         CircleButton(
           modifier = Modifier.padding(start = 24.dp),
           isEnable = !state.isLoading,
           painter = painterResource(R.drawable.facebook),
-          onClick = { onEventSent(LoginContracts.Event.SingInWFacebook) }
+          onClick = {
+            if (!state.isLoading && !state.isSuccess) onEventSent(LoginContracts.Event.SingInWFacebook)
+          }
         )
+        */
       }
       Spacer(modifier = Modifier.weight(1f))
       Row(
@@ -198,8 +210,10 @@ fun LoginScreen(
         val textLinkColor = if (isSystemInDarkTheme()) TextLinkColor else Color.Blue
         Text(text = "Create now", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = textLinkColor,
           modifier = Modifier
-            .padding(12.dp, 0.dp, 0.dp, 0.dp)
-            .clickable { onEventSent(LoginContracts.Event.Register) }
+            .padding(start = 12.dp)
+            .clickable {
+              if (!state.isLoading && !state.isSuccess) onEventSent(LoginContracts.Event.Register)
+            }
         )
       }
     }
@@ -207,9 +221,23 @@ fun LoginScreen(
 }
 
 @Suppress("FunctionNaming")
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
+  SessionManagerTheme {
+    LoginScreen(
+      state = LoginContracts.State(),
+      effectFlow = null,
+      onEventSent = {},
+      onNavigationRequested = {}
+    )
+  }
+}
+
+@Suppress("FunctionNaming")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun LoginScreenPreviewDark() {
   SessionManagerTheme {
     LoginScreen(
       state = LoginContracts.State(),

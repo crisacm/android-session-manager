@@ -7,24 +7,26 @@ import com.github.crisacm.sessionmanager.ui.feature.register.RegisterViewModel
 import com.github.crisacm.sessionmanager.ui.feature.register.composables.Register
 import org.koin.androidx.compose.getViewModel
 
+@Suppress("FunctionNaming")
 @Composable
 fun RegisterScreenDestination(navController: NavController) {
-    val viewModel = getViewModel<RegisterViewModel>()
-    Register(
-        state = viewModel.viewState.value,
-        effectFlow = viewModel.effect,
-        onEventSent = viewModel::setEvent,
-        onNavigationRequested = {
-            when (it) {
-                RegisterContracts.Effect.Navigation.ToLogin -> {
-                    navController.popBackStack()
-                    navController.navigateUp()
-                }
-                RegisterContracts.Effect.Navigation.ToMain -> {
-                    navController.popBackStack()
-                    navController.navigate(Home)
-                }
-            }
+  val viewModel = getViewModel<RegisterViewModel>()
+  Register(
+    state = viewModel.viewState.value,
+    effectFlow = viewModel.effect,
+    onEventSent = viewModel::setEvent,
+    onNavigationRequested = {
+      when (it) {
+        RegisterContracts.Effect.Navigation.ToLogin -> {
+          navController.popBackStack()
+          navController.navigate(Login)
         }
-    )
+
+        RegisterContracts.Effect.Navigation.ToMain -> {
+          navController.popBackStack()
+          navController.navigate(Home)
+        }
+      }
+    }
+  )
 }

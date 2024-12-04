@@ -18,6 +18,7 @@ class LoginContracts {
 
   data class State(
     val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
     val errorUserText: FieldError? = null,
     val errorPassText: FieldError? = null
   ) : ViewState

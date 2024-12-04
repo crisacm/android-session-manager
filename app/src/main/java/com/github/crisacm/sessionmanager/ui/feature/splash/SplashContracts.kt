@@ -5,15 +5,14 @@ import com.github.crisacm.sessionmanager.ui.base.ViewSideEffect
 import com.github.crisacm.sessionmanager.ui.base.ViewState
 
 object SplashContracts {
+  sealed interface Event : ViewEvent
 
-    sealed interface Event : ViewEvent
+  class State : ViewState
 
-    class State : ViewState
-
-    sealed interface Effect : ViewSideEffect {
-        sealed interface Navigation : Effect {
-            data object ToLogin : Navigation
-            data object ToMain : Navigation
-        }
+  sealed interface Effect : ViewSideEffect {
+    sealed interface Navigation : Effect {
+      data object ToLogin : Navigation
+      data object ToMain : Navigation
     }
+  }
 }
