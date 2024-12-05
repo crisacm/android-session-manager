@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1023932776626",
+    "project_id": "android-session-manager",
+    "storage_bucket": "android-session-manager.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023932776626:android:70354d2258c60ee6d849ab",
+        "android_client_info": {
+          "package_name": "com.github.crisacm.sessionmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1023932776626-r5v0cj2uf6s3asvrsh2mq9s1oodo6qvb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfrNVyQNlKg4tsBXy7sp9eVIF0HfW5jBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1023932776626-r5v0cj2uf6s3asvrsh2mq9s1oodo6qvb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

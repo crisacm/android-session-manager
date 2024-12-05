@@ -39,17 +39,13 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.crisacm"
             artifactId = "android-session-manager"
-            version = "0.0.6"
+            version = "0.0.7"
 
             afterEvaluate {
                 from(components["release"])
             }
         }
     }
-}
-
-tasks.withType<AbstractPublishToMaven> {
-    dependsOn("assembleRelease")
 }
 
 dependencies {
