@@ -19,7 +19,7 @@ Then add the dependency to the builde.gralde of your module:
 
 ```groovy
 dependencies {
-    implementation("com.github.crisacm:android-session-manager:0.0.1")
+    implementation("com.github.crisacm:android-session-manager:<latest-release>")
 }
 ```
 
