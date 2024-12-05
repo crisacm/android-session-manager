@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1023932776626:android:70354d2258c60ee6d849ab",
+        "mobilesdk_app_id": "1:1023932776626:android:2fa63ca1fa37e65ed849ab",
         "android_client_info": {
-          "package_name": "com.github.crisacm.sessionmanager"
+          "package_name": "com.github.crisacm.sessionmanager.demo"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "1023932776626-7s43v06qu9f9j5bbc9almlk2ra13vvme.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.crisacm.sessionmanager.demo",
+            "certificate_hash": "2ba0a7249ae593cb5fe40cb381d16af51b0df1cd"
+          }
+        },
         {
           "client_id": "1023932776626-r5v0cj2uf6s3asvrsh2mq9s1oodo6qvb.apps.googleusercontent.com",
           "client_type": 3
